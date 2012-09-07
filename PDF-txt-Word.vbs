@@ -1,6 +1,6 @@
 'PDF-txt-Word 
-'1.0 
-'9/5/2012 by tmoore82
+'1.1 
+'9/6/2012 by tmoore82
 
 'This script converts PDFs to plain text, then copies and pastes that plain text to a new Word document
 'This can be used when you want the text from a PDF without any of the formatting, 
@@ -56,46 +56,21 @@ AcroXAVDoc.Close False
 AcroXApp.Hide
 AcroXApp.Exit
 
-'declare constants for manipulating the text files
-Const ForReading = 1
-Const ForWriting = 2
-
-'Create a File System Object
-Dim objFSO
-Set objFSO = CreateObject("Scripting.FileSystemObject")
-
-'open the text file
-dim objFile
-set objFile=objFSO.OpenTextFile("C:\dmm\pdf-plain-text.txt", ForReading)
-
 'Create a Word Object
 Dim objWord
 set objWord = CreateObject("Word.Application")
 
-'make Word hidden
+'insert the file into Word
 With objWord
 	.Visible = False
+	.Documents.Add()
+	.Selection.InsertFile "C:\dmm\pdf-plain-text.txt"
+	'the next three lines lines are to change everything to our default style at work.
+	'if you just want the plain text and want to go from there, you don't need them.
+	.Selection.WholeStory
+	.Selection.Style="Body Text"
+	.Selection.Homekey
 End With
-
-'create a blank document
-Dim objDoc
-Set objDoc=objWord.Documents.Add()
-
-'create a shorter variable to pass commands to Word
-Dim objSelection
-set objSelection=objWord.Selection
-
-'Thanks to Kurt for the following!
-'Read one line at a time from the text file and 
-'type that line into Word until the end of the file is reached 
-Dim strLine 
-Do Until objFile.AtEndOfStream    
-	strLine = objFile.ReadLine    
-	objSelection.TypeText strLine 
-	objSelection.TypeParagraph
-Loop
-
-objFile.Close
 
 'make Word visible
 With objWord
