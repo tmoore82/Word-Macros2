@@ -1,0 +1,348 @@
+'CopyCat 
+'1.0
+'tmoore82
+'9/7/12
+
+'The following is code that can be used in VB macros for Word.
+'Some will require modification, 
+'but most can be copied and pasted directly into a new subroutine
+'It's commented out by default. Remember to uncomment
+'or copy without the apostrophe.
+
+'a
+
+    'ascii
+        'Chr(9) = tab (-->)
+        'chr(10) = line feed (vbLf)
+        'Chr(11) = manual line break (shift-enter)
+        'Chr(12) = manual page break
+        'Chr(13) = vbCrLf (return)
+        'Chr(14) = column break
+        'chr(20) = pilcrow -- device control four
+        'Chr(30) = non-breaking hyphen
+        'Chr(31) = optional hyphen (-)
+        'Chr(32) = Space ( )
+        'chr(33) = exclamation point (!)
+        'Chr(34) = quotation mark (straight) (")
+        'chr(46) = period (.)
+        'chr(58) = colon (:)
+        'chr(63) = question mark (?)
+        'chr(145) = opening single smart quote
+        'chr(146) = closing single smart quote / apostrophe
+        'chr(147) = opening double smart quote
+        'chr(148) = closing double smart quote
+        'chr(149) = bullet
+        'chr(150) = en dash (-)
+        'Chr(151) = em dash (--)
+        'Chr(160) = nonbreaking space
+        'chr(173) = hard hyphen
+
+    'add page numbers in a text box
+    '    With ActiveDocument.Sections(n).Footers(wdHeaderFooterPrimary).PageNumbers
+    '        .Add (wdPageNumberAlignmenLeft), FirstPage:=True
+    '    End With
+    '    ActiveDocument.Sections(n).Footers(wdHeaderFooterPrimary). _
+    '       PageNumbers.NumberStyle = wdPageNumberStyleLowercaseRoman
+
+'c
+
+    'call macro
+    
+        ' Application.Run MacroName:="[MacroName]"
+    
+    'carriage return
+    
+        ' Selection.TypeText Text:=Chr(9)
+        
+    'convert integer to string
+    
+        ' CStr(i)
+    
+    'counts
+    
+        'Word Count
+            'ActiveDocument.Words.Count (includes punctuation and pilcrows)
+        'Page count
+            'ActiveDocument.ComputeStatistics(wdStatisticPages)
+        
+    'cursor at beginning of document
+        
+        ' Selection.HomeKey Unit:=wdStory
+    
+    'cursor at end of document
+        'Selection.EndKey Unit:=wdStory
+
+'d
+
+    'delete all the headerfooters
+    
+        'Sub DeleteHeadFoot()
+        '    Dim oHF As HeaderFooter
+        '    Dim oSection As Section
+        '
+        '    For Each oSection In ActiveDocument.Sections
+        '        For Each oHF In oSection.Headers
+        '            oHF.Range.Delete
+        '        Next
+        '        For Each oHF In oSection.Footers
+        '            oHF.Range.Delete
+        '        Next
+        '    Next
+        'End Sub
+        
+    'display current doc name/handle
+    
+        'MsgBox ActiveDocument.activewindow.Caption
+        
+    'display current line number
+    
+        'MsgBox Selection.Information(wdFirstCharacterLineNumber)
+        
+     'do while
+     
+        'Do While
+        
+        'If Not Selection.Find.Execute Then Exit Do
+        
+        'Loop
+
+'e
+
+'f
+    
+    ' find & replace - default
+    
+        'Selection.Find.ClearFormatting
+        'Selection.Find.Replacement.ClearFormatting
+        'With Selection.Find
+        '    .Text = ""
+        '    .Replacement.Text = ""
+        '    .Forward = True
+        '   .Wrap = wdFindContinue
+        '   .Wrap = wdFindStop
+        '   .Wrap = wdFindAsk
+        '    .Format = False
+        '    .MatchCase = False
+        '    .MatchWholeWord = False
+        '    .MatchByte = False
+        '    .MatchAllWordForms = False
+        '    .MatchSoundsLike = False
+        '    .MatchWildcards = False
+        '    .MatchFuzzy = False
+        'End With
+        
+        'Selection.Find.Execute Replace:=wdReplaceAll, wdReplaceOne
+        
+    'formats
+    
+        ' wdOpenFormatAllWord           A Microsoft Word format that is backward compatible with earlier versions of Microsoft Word.
+        ' wdOpenFormatAuto              The existing format.
+        ' wdOpenFormatDocument          Microsoft Word format.
+        ' wdOpenFormatEncodedText       Encoded text format.
+        ' wdOpenFormatRTF               Rich text format (RTF).
+        ' wdOpenFormatTemplate          As a Microsoft Word template.
+        ' wdOpenFormatText              Unencoded text format.
+        ' wdOpenFormatUnicodeText       Unicode text format.
+        ' wdOpenFormatWebPages          HTML format.
+        ' wdOpenFormatXML               XML format.
+
+
+'g
+
+    'go to end of the line
+    
+        ' Selection.EndKey Unit:=wdLine
+        
+    'go to next window
+        'Application.Run MacroName:="NextWindow"
+        
+    'go to page
+    
+    'Selection.GoTo What:=wdGoToPage, Which:=[page number]
+
+'h
+
+    ' how "with" works
+    
+        ' "with string.string" tells VBA that the following lines ".string=" should be appended to the same string. this eliminates the need to repeat the string
+
+    'turn off same as previous in all headerfooters
+    
+    '    Dim objDoc As Document
+    '
+    '    Dim objSection As Section
+    '
+    '    Set objDoc = ActiveDocument
+    '
+    '        For Each objSection In objDoc.Sections
+    '
+    '            With objSection
+    '
+    '                .Headers(wdHeaderFooterEvenPages).LinkToPrevious = False
+    '
+    '                .Footers(wdHeaderFooterEvenPages).LinkToPrevious = False
+    '
+    '                .Headers(wdHeaderFooterFirstPage).LinkToPrevious = False
+    '
+    '                .Footers(wdHeaderFooterFirstPage).LinkToPrevious = False
+    '
+    '                .Headers(wdHeaderFooterPrimary).LinkToPrevious = False
+    '
+    '                .Footers(wdHeaderFooterPrimary).LinkToPrevious = False
+    '
+    '            End With
+    '
+    '        Next
+    '
+    '    Set objDoc = Nothing
+
+    
+'i
+   
+    'insert a section break next page
+    
+        'Selection.InsertBreak Type:=wdSectionBreakNextPage
+        
+    'insert doc no into footers
+    
+        'Application.Run MacroName:="InsertDocNoInFooters"
+    
+    'insert a field
+    '    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+    '        PreserveFormatting:=False
+    '    Selection.TypeText Text:="seq [name]"
+    '    Selection.Fields.Update
+    '    Selection.EndKey Unit:=wdLine
+
+'j
+
+'k
+
+'l
+
+'m
+
+    'maximize window
+    
+    '   Word.Application.WindowState = wdWindowStateMaximize
+    
+    
+    'minimize window
+    
+    '    Word.Application.WindowState = wdWindowStateMinimize
+    
+    'move cursor until character is found
+    
+    '   MoveEndUntil cset:="[]"
+
+'n
+
+    'name of doc, file name & path set to variable
+    
+    '   Dim DesDoc As String
+    '   DesDoc = ActiveDocument.Path & "\" & ActiveDocument.activewindow.Caption
+    
+    'new line
+    
+    '   (primarily for use within text strings in Visual Basic)
+    '   vbNewLine
+    
+'o
+
+    'open a doc
+    
+        'Documents.Open FileName:=DesDoc
+
+'p
+    
+    'progress bar (from existing form and code)
+    'UserForm ProgressBar must already exist
+    
+    '       Before Loop
+    '        Dim pb As Integer
+    '        pb = 1
+    '
+    '       Inside Loop
+    '        ProgressBar.Show
+    '        Dim sDescription As String
+    '        Dim sPercentComplete As Single
+    '        sDescription = "Macro Progress"'
+    '        sPercentComplete = (pb / ActiveDocument.[units].Count) * 100
+    '        ProgressBar.Increment sPercentComplete, sDescription
+    '
+    '        pb = pb + 1
+    '
+    '       After Loop
+    '        Unload ProgressBar
+    
+    'print a paragraph
+        
+        'Selection.TypeParagraph
+    
+'q
+
+'r
+
+    'readability statistics
+    
+        'Selection.Range.ReadabilityStatistics(n)
+    
+            '1  Words
+            '2  Characters
+            '3  Paragraphs
+            '4  Sentences
+            '5  Sentences Per Paragraph
+            '6  Words per Sentence
+            '7  Characters per word
+            '8  Passive Sentences
+            '9  Flesch Reading Ease
+            '10 Flesch-Kincaid Grade level
+
+    'restore normal view
+    
+        'ActiveDocument.activewindow.View.Type = wdNormalView
+        
+    'return to the main document
+        
+        'activewindow.ActivePane.View.SeekView = wdSeekMainDocument
+
+'s
+
+    'save current doc to desktop
+    
+        'ActiveDocument.SaveAs2 ("c:\users\mooret\desktop\" & ActiveDocument.activewindow.Caption)
+    
+    'if nothing selected
+    
+        '
+    
+    'space
+    
+        ' Selection.TypeText Text:=Chr(32)
+    
+'t
+
+
+    'toggle fields on/off
+    
+        'ActiveWindow.View.ShowFieldCodes = Not ActiveWindow.View.ShowFieldCodes
+        
+
+'u
+
+    'undo
+    
+        'ActiveDocument.Undo
+
+'v
+
+'w
+
+'x
+
+'y
+
+'z
+
+
+
