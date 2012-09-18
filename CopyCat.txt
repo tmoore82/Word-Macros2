@@ -44,6 +44,12 @@
     '    ActiveDocument.Sections(n).Footers(wdHeaderFooterPrimary). _
     '       PageNumbers.NumberStyle = wdPageNumberStyleLowercaseRoman
 
+'b
+
+	'show/hide bookmarks
+
+		'ActiveWindow.View.ShowBookmarks = True/False
+
 'c
 
     'call macro
@@ -162,7 +168,11 @@
 
 'h
 
-    ' how "with" works
+	'highlight
+		Selection.Range.HighlightColorIndex = wdYellow
+		Selection.Range.HighlightColorIndex = wdNoHighlight
+
+    'how "with" works
     
         ' "with string.string" tells VBA that the following lines ".string=" should be appended to the same string. this eliminates the need to repeat the string
 
@@ -316,12 +326,40 @@
     
         '
     
+    'select all shapes
+
+        'Sub SelectShapes()
+	'ActiveDocument.Shapes.SelectAll
+	'End Sub
+
     'space
     
         ' Selection.TypeText Text:=Chr(32)
     
 't
 
+
+     'insert a table, turn borders on, go to the first cell
+
+	'Dim myRange As Range
+	'Set myRange = ActiveDocument.Range(Start:=0, End:=0)
+
+	'Dim oTbl
+'	Set oTbl = ActiveDocument.Tables.Add(Range:=myRange, NumRows:=10, NumColumns:=6)
+ 
+	'With oTbl
+	'    .Borders(wdBorderTop).LineStyle = wdLineStyleSingle
+	'    .Borders(wdBorderLeft).LineStyle = wdLineStyleSingle
+	'    .Borders(wdBorderBottom).LineStyle = wdLineStyleSingle
+	'    .Borders(wdBorderRight).LineStyle = wdLineStyleSingle
+	'    .Borders(wdBorderHorizontal).LineStyle = wdLineStyleSingle
+	'    .Borders(wdBorderVertical).LineStyle = wdLineStyleSingle
+	'    '.Borders(wdBorderDiagonalDown).LineStyle = wdLineStyleSingle
+	'    '.Borders(wdBorderDiagonalUp).LineStyle = wdLineStyleSingle
+	'  End With
+    
+'ActiveDocument.Tables(1).Cell(Row:=1, Column:=1).Range.Select
+'Selection.Collapse
 
     'toggle fields on/off
     
