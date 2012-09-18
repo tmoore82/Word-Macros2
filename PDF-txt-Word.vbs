@@ -8,22 +8,27 @@
 
 'Users should save the pdf to their Desktop before running the script.
 
+MsgBox ("When I convert the PDF to Word, you may not see anything on the screen. I'll let you know when I'm done, though, K?")
+
+Dim objFSO
+Set objFSO = CreateObject ("Scripting.FileSystemObject")
+
 'string to hold file path (DMM is short for Don't Mind Me, as this is a space for temporary files the user can ignore.)
 Dim strDMM
-strDMM = "C:\dmm"
+strDMM = "C:\dmm\"
 
 'make this directory if it doesn't exits
 On Error Resume Next
-MkDir strDMM
+objFSO.CreateFolder(strDMM)
 On Error GoTo 0
 
 'get the username to go to the right filepath
 Dim strUser
-strUser = InputBox("What is your username?" & chr(13) & chr(13) & "(Example: [myname])", "Username")
+strUser = InputBox("What is your username?" & chr(13) & chr(13) & "(Example: mooret)", "Username")
 
 'get the file name to process
 Dim TheFile
-TheFile = InputBox("What is the file name?" & chr(13) & chr(13) & "(Example: [file.pdf])", "Name of File")
+TheFile = InputBox("What is the file name?" & chr(13) & chr(13) & "(Example: 703582663_2.pdf)", "Name of File")
 
 'declare some acrobat variables
 Dim AcroXApp
@@ -78,4 +83,4 @@ With objWord
 End With
 
 'Remind the user to save
-MsgBox ("Save the document.")
+MsgBox ("I'm all done! Save the document.")
