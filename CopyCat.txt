@@ -24,6 +24,8 @@
         'Chr(32) = Space ( )
         'chr(33) = exclamation point (!)
         'Chr(34) = quotation mark (straight) (")
+	'chr(40) = open parenthesis (
+	'chr(41) = close parenthesis )
         'chr(46) = period (.)
         'chr(58) = colon (:)
         'chr(63) = question mark (?)
@@ -59,6 +61,35 @@
     'carriage return
     
         ' Selection.TypeText Text:=Chr(9)
+
+    'casting
+
+	'CInt(variable) 'to cast as integer
+	'CStr(variable) 'to cast as string
+
+	'CBool(expression)
+
+	'CByte(expression)
+
+	'CCur(expression)
+
+	'CDate(expression)
+
+	'CDbl(expression)
+
+	'CDec(expression)
+
+	'CInt(expression)
+
+	'CLng(expression)
+
+	'CSng(expression)
+
+	'CStr(expression)
+
+	'CVar(expression)
+
+
         
     'convert integer to string
     
@@ -141,7 +172,8 @@
         
     'formats
     
-        ' wdOpenFormatAllWord           A Microsoft Word format that is backward compatible with earlier versions of Microsoft Word.
+        ' wdOpenFormatAllWord           A Microsoft Word format that is backward 					compatible with earlier versions of 					Microsoft Word.
+
         ' wdOpenFormatAuto              The existing format.
         ' wdOpenFormatDocument          Microsoft Word format.
         ' wdOpenFormatEncodedText       Encoded text format.
@@ -151,6 +183,10 @@
         ' wdOpenFormatUnicodeText       Unicode text format.
         ' wdOpenFormatWebPages          HTML format.
         ' wdOpenFormatXML               XML format.
+
+    'full path and file name
+
+	'ActiveDocument.FullName
 
 
 'g
@@ -264,6 +300,13 @@
         'Documents.Open FileName:=DesDoc
 
 'p
+
+    'paste
+
+	'paste with original formatting
+
+	' Selection.PasteAndFormat (wdFormatOriginalFormatting)
+
     
     'progress bar (from existing form and code)
     'UserForm ProgressBar must already exist

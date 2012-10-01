@@ -1,0 +1,21 @@
+Sub ClearBkmksSimple_NT()
+'Version v1.0
+'tmoore82
+'10/01/12
+
+'Simplest way I could find to clear all bookmarks from a document quickly.
+
+Dim n As Integer
+Dim nCurrentBookmark As Integer
+Dim nTotalBookmarks As Integer
+
+n = 1
+nTotalBookmarks = ActiveDocument.Bookmarks.Count
+nCurrentBookmark = 1
+
+Do Until nCurrentBookmark > nTotalBookmarks
+    ActiveDocument.Bookmarks(n).Delete
+    nCurrentBookmark = nCurrentBookmark + 1
+Loop
+
+End Sub
