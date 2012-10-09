@@ -1,0 +1,55 @@
+Public Sub CleanAlittleNT()
+'
+'Version 6
+
+'tmoore82
+'10/02/12 (undated until now)
+'
+'The CleanAlittle Macro will both paste the source text
+'without formatting and do some cleanup
+'(extra spaces, tabs, paragraph markers, etc.) in one sweep.
+'This should save a few manual steps.
+    
+On Error GoTo ErrMsg
+    
+    Set SrcDoc = ActiveDocument
+    
+    'copy the selection
+    Selection.Copy
+    
+    'if another window is open, activate that one
+    'if not, open a new doc
+    If Windows.Count > 1 Then
+        Application.Run MacroName:="NextWindow"
+        Set DesDoc = ActiveDocument
+    Else
+        Documents.Add
+        Set DesDoc = ActiveDocument
+    End If
+    
+    'paste text only
+    Selection.PasteSpecial DataType:=wdPasteText
+    
+    'change the selection to body text
+    Selection.WholeStory
+    Selection.Style = DesDoc.Styles("Body Text")
+    
+    'run the cleanup macros
+    DeleteXtraAENT
+    DeleteXtraSpaceNT
+    DeleteXtraTabNT
+    DeleteXtraParaNT
+    Str2CurlAltNT
+    TwoAfterPNT
+    HardSpace_NT
+    
+    'alert the user that the macro is complete
+    CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

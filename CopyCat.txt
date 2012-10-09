@@ -9,6 +9,10 @@
 'It's commented out by default. Remember to uncomment
 'or copy without the apostrophe.
 
+'10/09/12
+'I've moved most of this to a Word doc and formatted it for 
+'easier use and access. This won't be updated anymore.
+
 'a
 
     'ascii

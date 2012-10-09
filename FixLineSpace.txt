@@ -1,0 +1,41 @@
+Public Sub FixLineSpaceNT()
+'Version 3
+'9/14/12
+'tmoore82
+
+'If you work with pleading lines, you'll know what this is for.
+'Different things throw off line spacing in a doc. This lines 
+'up your text with the pleading lines in a given paragraph.
+
+'Error! 10/09/12
+'Line correction inaccurate. Run more tests.
+
+Dim LineMatch As String
+
+'MsgBox InchesToPoints(Selection.Information(wdVerticalPositionRelativeToPage)) / 72 - 72
+
+LineMatch = InputBox("What line number do you need to match (left margin)?", "Line Match")
+If LineMatch = "" Then Exit Sub
+LineMatch = (LineMatch - 1) * 24
+
+Dim WrLinePos As Double
+WrLinePos = InchesToPoints(Selection.Information(wdVerticalPositionRelativeToPage)) / 72 - 72
+
+'MsgBox (WrLinePos & "     " & LineMatch)
+
+Dim CorLinePos As Double
+CorLinePos = LineMatch - WrLinePos
+
+With Selection.ParagraphFormat
+    .SpaceBefore = CorLinePos
+End With
+
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+                        
+End Sub

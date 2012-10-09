@@ -1,0 +1,58 @@
+Public Sub DeleteXtraParaNT()
+
+'PDF-to-Word conversions have funny ways of breaking
+'paragraphs. This repairs some of the more common issues
+'I'm used to seeing.
+
+Application.ScreenUpdating = False
+
+n = 1
+
+WhichCase:
+
+Select Case n
+
+    Case 1
+    
+        FindThis = "^13{2,}"
+        ReplaceWithThis = "^p"
+        
+    Case 2
+    
+        FindThis = "^13 ^13"
+        ReplaceWithThis = "^p"
+    
+    Case 3
+    
+        FindThis = "([a-z])^13([a-z])"
+        ReplaceWithThis = "\1 \2"
+        
+    Case 4
+    
+        FindThis = "([a-z]) ^13([a-z])"
+        ReplaceWithThis = "\1 \2"
+    
+    Case Else
+        
+        GoTo GetOut
+
+End Select
+
+    Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+    
+    n = n + 1
+
+GoTo WhichCase
+
+GetOut:
+
+Application.ScreenUpdating = False
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub

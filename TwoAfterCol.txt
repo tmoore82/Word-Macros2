@@ -1,0 +1,19 @@
+Public Sub TwoAfterColNT()
+'Version 2
+
+'tmoore82
+'9/28/12
+
+'Adds two spaces after a colon. Required or 
+'preferred by some clients.
+
+Application.ScreenUpdating = False
+
+FindThis = "(*>)" & Chr(58) & " (<?)"
+ReplaceWithThis = "\1" & Chr(58) & "  \2"
+
+FindWithWildCardsNT
+
+Application.ScreenUpdating = True
+
+End Sub

@@ -1,0 +1,28 @@
+Public Sub Str2CurlNT()
+'Version 2
+
+'tmoore82
+'10/02/12
+
+'Changes straight quotes to curly quotes
+
+Dim bOldAutoFormatQuotes As Boolean
+bOldAutoFormatQuotes = Word.Application.Options.AutoFormatReplaceQuotes
+
+Word.Application.Options.AutoFormatReplaceQuotes = True
+
+.Text = """"
+.Replacement.Text = """"
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+FindThis = "'"
+ReplaceWithThis = "'"
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+Selection.HomeKey Unit:=wdStory
+    
+Word.Application.Options.AutoFormatReplaceQuotes = bOldAutoFormatQuotes
+
+End Sub

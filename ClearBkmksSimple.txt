@@ -1,5 +1,5 @@
 Sub ClearBkmksSimple_NT()
-'Version v1.0
+'Version v1
 'tmoore82
 '10/01/12
 

@@ -1,0 +1,78 @@
+Public Sub RestorePass_NT()
+
+'Version 3
+
+'tmoore82
+'10/09/12
+
+'Restores passwords removed by UnPass. 
+'UnPass must be installed.
+
+'These files will clutter your desktop.
+'If you don't want to remove them manually, 
+'redirect them, or set the macro to delete them.
+
+strDMM = "C:\dmm"
+
+strFullName = ActiveDocument.FullName
+strNewName = strFullName & "-rpw-copy.zip"
+DesFold = strDMM
+
+ActiveDocument.SaveAs2 FileName:=strNewName
+ActiveDocument.Close
+
+DeleteFile_NT (strDMM)
+Call Copy_Files_NT(FromFolder:=strNewName, ToFolder:=DesFold, FolderItself:=False)
+UnParseXML_NT
+
+
+End Sub
+
+Private Sub UnParseXML_NT()
+'Version 3
+
+'tmoore82
+'10/09/12
+
+'On Error GoTo ErrMsg
+
+Documents.Open FileName:="c:\users\mooret\Desktop\restore-pw.docx"
+Selection.WholeStory
+Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+strPassword = Selection.Text
+ActiveDocument.Close False
+
+'initiate a variable for our regular expression
+FindThis = "/\>"
+
+'declare and initiate a regular expression object
+Dim RegEx
+Set RegEx = CreateObject("vbscript.regexp")
+
+'tell the regex what to look for and to search the whole doc
+With RegEx
+    .Pattern = FindThis
+End With
+
+'set constants for reading and writing (because my memory can't handle numbers)
+Const ForReading = 1
+Const ForWriting = 2
+Const ForAppending = 8
+
+    'create a file system object
+    'this gains access to the computer's file system
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+    Set objFile = objFSO.OpenTextFile("C:\dmm\word\settings.xml", ForReading)
+    strText = objFile.Readall
+    objFile.Close
+
+    Set objFile = objFSO.OpenTextFile("C:\dmm\word\settings.xml", ForWriting)
+    strNewText = RegEx.Replace(strText, "/>" & strPassword)
+    objFile.WriteLine strNewText
+    objFile.Close
+
+ReZip_NT (strNewName)
+
+
+End Sub

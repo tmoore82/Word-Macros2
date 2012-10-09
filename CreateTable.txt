@@ -1,0 +1,47 @@
+Sub CreateTable_NT()
+'Version 2
+
+'tmoore82
+'9/25/12
+
+'This macro creates a table in a new document.
+'There's no advantage over doing this manually, but 
+'this can add power to other macros.
+
+'adding a new document
+Documents.Add
+
+'you'll need a range for the table
+Dim myRange As Range
+Set myRange = ActiveDocument.Range(Start:=0, End:=0)
+
+'row and column variables
+Dim nRows
+Dim nColumns
+
+'get user input for NumRows and NumColumns
+nColumns = InputBox("How many columns will the table have?")
+nRows = InputBox("How many rows do you need to start?")
+
+'create the table
+Dim oTbl
+Set oTbl = ActiveDocument.Tables.Add(Range:=myRange, NumRows:=nRows, NumColumns:=nColumns)
+ 
+ 'All borders except diagonal
+ 
+ With oTbl
+    .Borders(wdBorderTop).LineStyle = wdLineStyleSingle
+    .Borders(wdBorderLeft).LineStyle = wdLineStyleSingle
+    .Borders(wdBorderBottom).LineStyle = wdLineStyleSingle
+    .Borders(wdBorderRight).LineStyle = wdLineStyleSingle
+    .Borders(wdBorderHorizontal).LineStyle = wdLineStyleSingle
+    .Borders(wdBorderVertical).LineStyle = wdLineStyleSingle
+    '.Borders(wdBorderDiagonalDown).LineStyle = wdLineStyleSingle
+    '.Borders(wdBorderDiagonalUp).LineStyle = wdLineStyleSingle
+  End With
+
+'select the first cell in the table
+ActiveDocument.Tables(1).Cell(Row:=1, Column:=1).Range.Select
+Selection.Collapse
+
+End Sub

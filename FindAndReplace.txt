@@ -1,0 +1,38 @@
+'10/09/12
+
+'I use find and replace a lot. It saves me a lot of space
+'and time to keep a default F&R at the ready--one that uses
+'wildcards, one that doesn't.
+
+Public Function FindWithWildCardsNT(FindThis As String, ReplaceWithThis As String)
+ 
+ Selection.Find.ClearFormatting
+ Selection.Find.Replacement.ClearFormatting
+
+    With Selection.Find
+        .Text = FindThis
+        .Replacement.Text = ReplaceWithThis
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = True
+    End With
+    
+    Selection.Find.Execute Replace:=wdReplaceAll
+
+End Function
+Public Function FindDefaultNT(FindThis As String, ReplaceWithThis As String)
+
+ Selection.Find.ClearFormatting
+ Selection.Find.Replacement.ClearFormatting
+
+    With Selection.Find
+        .Text = FindThis
+        .Replacement.Text = ReplaceWithThis
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = False
+    End With
+    
+    Selection.Find.Execute Replace:=wdReplaceAll
+
+End Function

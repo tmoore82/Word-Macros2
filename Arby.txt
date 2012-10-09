@@ -1,0 +1,508 @@
+Private iFirstPageO As Integer
+Private iFirstPageONT As Integer
+Private iFirstPageN As Integer
+Private iLineFirst As Integer
+Private iLastPageO As Integer
+Private iLastPageN As Integer
+Private iLineLast As Integer
+Private iPageDiff As Integer
+Private NumCheck As Range
+Private BwFw As String
+
+
+'Version 3
+'10/03/12
+'Arby was copied from PgLnRev (also my original) and optimized.
+'It is ready for beta testing.
+
+'10 parts. Combines with ArbyClean.
+
+'Arby is for copying parts of a transcript document and formatting
+'the resulting citations. (The name comes from "Arbitration", which
+'was the original doc type Arby was used for. It is built for
+'a specific format of transcript document and may need serious
+'alterations for other applications. The citation style may
+'also have to be updated depending on operator needs/client
+'preference.
+
+'It still gets caught on an infinite loop in certain documents.
+'This needs to be fixed.
+
+Public Sub ArbyNTp1()
+
+If MsgBox("Did you delete the index?", vbYesNo) = vbYes Then
+    ArbyNTp2
+Else
+    Exit Sub
+End If
+
+Exit Sub
+
+
+End Sub
+Private Sub ArbyNTp2()
+
+'On Error GoToErrMsg
+
+'assign the active document to a variable we can activate later
+Set SrcDoc = ActiveDocument
+
+'This variable isn't used until later.
+'It helps set unique bookmarks throughout the document.
+n = 0
+
+'add a new document, assign it a variable, turn off hidden characters
+Documents.Add
+MyStylesNT
+Set DesDoc = ActiveDocument
+ActiveWindow.ActivePane.View.ShowAll = False
+
+'go back to the source document
+SrcDoc.Activate
+
+'turn off screen updating
+Application.ScreenUpdating = False
+ClearShapes
+
+'place cursor at beginning of document
+Selection.HomeKey Unit:=wdStory
+
+'set the values for iFirstPageO and iLastPageO to 0
+'this is for the comparison coming up
+'makes sure that the first time through, iFirstPageONT doesn't interfere with the search
+iFirstPageO = Int((999 - 0 + 1) * Rnd + 0)
+iLastPageO = Int((999 - 0 + 1) * Rnd + 0)
+
+ArbyNTp3
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+    
+End Sub
+Private Sub ArbyNTp3()
+
+'On Error GoToErrMsg
+
+'This should help retain iFirstPageO when looping
+iFirstPageONT = iFirstPageO
+
+'MsgBox (iFirstPageONT)
+
+'Get the Page number
+iFirstPageO = InputBox("What is the original starting page number (not Word doc page number) of the selection you want to copy?", "First Page No.")
+
+'MsgBox (iFirstPageO)
+
+'see if it's starting on the same page as before.
+'if so, go straight to the next part
+'this prevents searching for a new page number
+'going straight to the new line instead
+
+If iFirstPageO = iFirstPageONT Then
+    ArbyNTp2
+ElseIf iFirstPageO = iLastPageO Then
+    ArbyNTp2
+Else
+End If
+
+'Set a second page number variable in case the original page number didn't make the transfer
+'this will be necessary later to figure out how to get to the right line
+iFirstPageN = iFirstPageO
+
+'set a variable that determines the direction of the search
+'if the page number can be found, we can search forward from there
+'if it can't, we'll have to find the next biggest page #
+'and search backward
+BwFw = True
+
+'set a return point in case we don't find the page number
+'and we need to search again
+Search:
+    
+    'try to find the page number
+    With Selection.Find
+        .Text = "Page " & iFirstPageN
+        .Forward = BwFw
+        .Wrap = wdFindStop
+    End With
+
+    Selection.Find.Execute
+    
+    'if you don't find it, search for the next page number
+    If Selection.Find.Found = False Then
+        iFirstPageN = iFirstPageN + 1
+        GoTo Search
+    Else
+    'when you do find a result (original page number or not)
+    'figure out the difference between the pages
+    'if that difference is greater than 0, change the search direction to backward
+        If iFirstPageN <> iFirstPageO Then
+            iPageDiff = iFirstPageN - iFirstPageO
+            
+            'MsgBox (iPageDiff)
+            
+            BwFw = False
+        Else
+        'otherwise leave the search direction as forward
+            iPageDiff = 0
+            BwFw = True
+        End If
+    End If
+        
+'go to the next step
+ArbyNTp4
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+    
+End Sub
+Private Sub ArbyNTp4()
+
+'On Error GoToErrMsg
+
+'set a variable we can use to check against the page difference
+'set in the previous part
+Dim PD As Integer
+PD = 0
+
+'get the line number we need to search for
+iLineFirst = InputBox("On what line does your selection begin?", "First Line No.")
+
+'deselect the oriignal page number.
+'we don't need to copy that.
+Selection.MoveRight Unit:=wdCharacter, Count:=1
+
+'if the page difference isn't 0, we should be searching backward
+'so look for line number 25 (the highest line number)
+'pp - (how to avoid getting stopped by dates or other references?)
+If iPageDiff <> 0 Then
+    With Selection.Find
+        .Text = "25"
+        .Forward = False
+        .Wrap = wdFindStop
+    End With
+
+    'search for line number NT5 as many times as the page difference
+    'this should get us back to the right page.
+    'pp - NT5 in text
+    Do Until PD = iPageDiff
+        Selection.Find.Execute
+        PD = PD + 1
+    Loop
+    
+    'deselect the found NT5
+    Selection.MoveLeft Unit:=wdWord, Extend:=wdMove
+Else
+    GoTo SearchNT
+End If
+
+'search point for looping
+SearchNT:
+
+If BwFw = True Then
+
+    'find the line number, continuing to search in the same direction
+    With Selection.Find
+        .Text = CStr(iLineFirst)
+        .Forward = BwFw
+        .Wrap = wdFindStop
+    End With
+    
+    Selection.Find.Execute
+    
+
+Else
+
+    'set a range and select it (to prevent finding the "7" in "17")
+    'pp - numbers in text
+    Set NumCheck = ActiveDocument.Range(Start:=Selection.Start - 1, End:=Selection.End)
+    NumCheck.Select
+
+    'see if selection matches the line number
+    'pp - numbers in text
+    If Selection.Text <> CStr(iLineFirst) Then
+        Selection.MoveLeft Unit:=wdWord, Extend:=wdMove
+        GoTo SearchNT
+    Else
+    End If
+    
+End If
+
+'go to the next step
+ArbyNTp5
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub
+Private Sub ArbyNTp5()
+
+'On Error GoToErrMsg
+
+
+'refresh the screen, so the user can see what's happening
+Application.ScreenRefresh
+
+'get the last page number for the selection
+iLastPageO = InputBox("What is the original ending page number (not the Word doc page number) of the selection you want to copy?", "Last Page No.")
+
+'set a variable to compare against
+iLastPageN = iLastPageO
+
+'since we've actually selected stuff we want to copy, we want to redefine the range so we can keep it
+Set r = ActiveDocument.Range(Start:=Selection.Start, End:=Selection.End)
+Selection.MoveRight Unit:=wdCharacter, Count:=1
+
+'make sure searches move forward from here
+BwFw = True
+
+'see if we're working from the same page
+'if so, go to the next part
+If iLastPageO = iFirstPageO Then
+    ArbyNTp7
+    Exit Sub
+Else
+End If
+
+Search3:
+        
+        'search for the last page number
+        With Selection.Find
+            .Text = "Page " & iLastPageN
+            .Forward = BwFw
+            .Wrap = wdFindStop
+        End With
+
+        Selection.Find.Execute
+  
+    'if you don't find it, search for the next page number
+    If Selection.Find.Found = False Then
+        iLastPageN = iLastPageN + 1
+        GoTo Search3
+    Else
+        'extend the original selection to the end of the found text
+        r.End = Selection.End
+        r.Select
+        'set the page difference if it's not 0, so we can get back to the right page
+        If iLastPageN <> iLastPageO Then
+            iPageDiff = iLastPageN - iLastPageO
+            
+            'MsgBox (iPageDiff)
+            
+            'set to search backward if it had to go to a larger page number
+            BwFw = False
+        Else
+            'make sure it keeps searching forward if it found the page number
+            BwFw = True
+        End If
+    End If
+ 
+
+'go to the next step
+ArbyNTp7
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub
+Private Sub ArbyNTp7()
+
+'On Error GoToErrMsg
+
+'declare a variable for setting up our loop in case we had to go to a later page
+Dim PD As Integer
+PD = 0
+
+'get the number of the last line needed
+iLineLast = InputBox("What is the number of the last line you want to copy?", "Last Line No.")
+
+'deselect the current selection and place the cursor at the end
+Selection.MoveRight Unit:=wdCharacter, Count:=1
+
+'if the page difference isn't 0, search backward through PD number of NT5s
+'this will fail if 25 is in the text. not sure what to do about it
+If iPageDiff <> 0 Then
+
+    With Selection.Find
+        .Text = "25"
+        .Forward = BwFw
+        .Wrap = wdFindStop
+    End With
+
+    Do Until PD = iPageDiff
+        Selection.Find.Execute
+        PD = PD + 1
+    Loop
+    
+'otherwise just move on
+Else
+    GoTo Search4
+End If
+
+Search4:
+
+'if searching forward, continue searching forward
+If BwFw = True Then
+    
+    Selection.MoveRight Unit:=wdCharacter, Extend:=wdMove
+    
+    'find the last line
+    With Selection.Find
+        .Text = Chr(13) & CStr(iLineLast)
+        .Forward = BwFw
+        .Wrap = wdFindStop
+    End With
+    
+    Selection.Find.Execute
+    
+    'reset the range to include everything up to this point
+    r.End = Selection.End
+    r.Select
+
+Else
+    
+    Selection.MoveLeft Unit:=wdCharacter, Extend:=wdMove
+    
+    'find the last line
+    With Selection.Find
+        .Text = Chr(13) & CStr(iLineLast)
+        .Forward = BwFw
+        .Wrap = wdFindStop
+    End With
+    
+    Selection.Find.Execute
+    
+    'reset the range to include everything up to this point
+    r.End = Selection.End
+    r.Select
+    
+    'select the rest of the line (we only have the number)
+    Selection.MoveEnd Unit:=wdParagraph
+
+End If
+
+'go to the next step
+ArbyNTp8
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub
+Private Sub ArbyNTp8()
+
+'On Error GoToErrMsg
+
+'copy the selection
+Selection.Copy
+
+'activate the destination document
+DesDoc.Activate
+
+'set up a bookmark
+'we return to this later to insert the references
+Selection.TypeText Text:=Chr(32) & "t"
+Selection.MoveLeft Unit:=wdCharacter, Count:=2, Extend:=wdExtend
+    With ActiveDocument.Bookmarks
+        .Add Range:=Selection.Range, Name:="temp" & n
+        .DefaultSorting = wdSortByName
+        .ShowHidden = True
+    End With
+Selection.MoveRight Unit:=wdCharacter, Extend:=wdMove
+
+'paste the text without formatting
+Selection.PasteSpecial DataType:=wdPasteText
+
+'go to the next step
+ArbyNTp9
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub
+Private Sub ArbyNTp9()
+
+
+'On Error GoToErrMsg
+
+'delete the bookmark we created earlier
+Selection.GoTo What:=wdGoToBookmark, Name:="temp" & n
+Selection.Delete
+
+n = n + 1
+
+'turn on hidden font, so we can avoid deleting things we want to keep
+Selection.Font.Hidden = True
+
+
+'create a header placeholder
+Selection.TypeText Text:=Chr(32) & "+++header"
+
+Selection.TypeParagraph
+
+'set style to "Transcript Cite"
+Selection.Style = "Transcript Cite"
+
+'now insert the reference to the copied selection
+'also in hidden text, to prevent it from being deleted later
+Selection.Font.Hidden = True
+Selection.TypeText Text:=iFirstPageO & Chr(58) & iLineFirst & Chr(32) & Chr(150) & Chr(32) & iLastPageO & Chr(58) & iLineLast
+
+Selection.TypeParagraph
+Selection.Style = "Body Text"
+'turn off hidden text and underline
+Selection.Font.Hidden = False
+
+'go to the end of the document and prepare space for more copy-pastes
+Selection.EndKey Unit:=wdStory
+Selection.TypeParagraph
+Selection.Font.Hidden = False
+
+'go to the next part
+ArbyNTp10
+
+Exit Sub
+
+ErrMsg:
+    UhOhNT
+
+End Sub
+Private Sub ArbyNTp10()
+
+'On Error GoToErrMsg
+
+'ask if there are more, if so, go to the next part
+If MsgBox("More?", vbYesNo) = vbNo Then
+    ArbyCleanNTp1
+Else
+    'if not, go to the source document, deselect any previous selections
+    'start back at part 3
+    SrcDoc.Activate
+    Selection.MoveRight Unit:=wdCharacter, Count:=1
+    ArbyNTp3
+End If
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub

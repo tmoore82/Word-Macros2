@@ -1,0 +1,270 @@
+'These are alerts I use to keep the operator informed.
+'Most of my macros reference them. If you are trying to 
+'use any of my macros "out of the box," you'll need 
+'a module with these in there.
+
+Public strQarray(100) As String
+Public strQ As String
+Public Sub LossAlertNT()
+'Version 1
+'Beta Release v1.0
+'tmoore82
+'10/02/12 (undated until now)
+
+'reminds operator that certain things will not be copied in a cleanup
+
+Dim strLost As String
+
+If ActiveDocument.Tables.Count > 0 Then strTables = _
+    "There are tables in this document." & vbCr & _
+    "They will be converted to unformatted text." & vbCr & vbCr
+If ActiveDocument.Footnotes.Count > 0 Then strLost = "     - Footnotes" & vbCr
+If ActiveDocument.Endnotes.Count > 0 Then strLost = strLost & "     - Endnotes" & vbCr
+If ActiveDocument.Shapes.Count > 0 Or ActiveDocument.InlineShapes.Count > 0 Then _
+    strLost = strLost & "     - Graphics and/or Text Boxes"
+If Len(strLost) > 0 Then
+    strLost = strTables & "The following were found in this document:" & vbCr & _
+        strLost & vbCr & _
+        "They will NOT be copied to the new document."
+Else
+    strLost = strTables
+End If
+
+If Len(strLost) > 0 Then
+    Dim Response
+    Response = MsgBox(strLost, 49, "IMPORTANT WARNING") '49=1(vbOKCancel)+48(vbExclamation)
+    If Response = 2 Then End '2=Cancel button
+End If
+
+End Sub
+Public Sub CompletedNT()
+'Version 2
+'Beta Release v1.0
+'tmoore82
+'10/02/12 (undated until now)
+
+Dim strChk As String
+strChk = "Task completed. Save the document and check for errors."
+FillqArray
+MsgBox (strChk & vbNewLine & vbNewLine & strQ)
+End Sub
+Public Sub UhOhNT()
+'Version NT
+'Beta Release v1.0
+'tmoore82
+'10/02/12 (undated until now)
+
+Dim strUhOh As String
+strUhOh = "The macro is not working properly. You may panic now. When you return to your senses, ponder these words of wisdom:"
+FillqArray
+MsgBox (strUhOh & vbNewLine & vbNewLine & strQ)
+End Sub
+Public Sub FillqArray()
+'NT version 2
+    strQarray(0) = """All you need is ignorance and confidence and the success is sure.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mark Twain"
+    strQarray(1) = """I was watching the Animal Planet. Did you know that the male seahorse has the baby? Why don 't they just call that one the female?""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jim Gaffigan"
+    strQarray(NT) = """A word to the wise ain't necessary - it's the stupid ones that need the advice.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Bill Cosby"
+    strQarray(3) = """A pessimist is a person who has had to listen to too many optimists.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Don Marquis"
+    strQarray(4) = """A waffle is like a pancake with a syrup trap.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(5) = """I always wanted to be somebody, but now I realize I should have been more specific.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Lily Tomlin"
+    strQarray(6) = """Cleanliness becomes more important when godliness is unlikely.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "P.J. O'Rourke"
+    strQarray(7) = """I intend to live forever. So far, so good.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Steven Wright"
+    strQarray(8) = """Do not worry about avoiding temptation. As you grow older it will avoid you.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Joey Adams"
+    strQarray(9) = """The only time a woman really succeeds in changing a man is when he is a baby.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Natalie Wood"
+    strQarray(10) = """Nobody ever went broke underestimating the taste of the American public.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "H.L. Mencken"
+    strQarray(11) = """I never drink water because of the disgusting things that fish do in it.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "W.C. Fields"
+    strQarray(12) = """O Lord, help me to be pure, but not yet.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Saint Augustine"
+    strQarray(13) = """I have tried to know absolutely nothing about a great many things, and I have succeeded fairly well.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Robert Benchley"
+    strQarray(14) = """It's amazing that the amount of news that happens in the world every day always just exactly fits the newspaper.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jerry Seinfeld"
+    strQarray(15) = """I saw a woman wearing a sweatshirt with Guess on it. I said, Thyroid problem?""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Arnold Schwarzenegger"
+    strQarray(16) = """Originality is the fine art of remembering what you hear but forgetting where you heard it.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Laurence J. Peter"
+    strQarray(17) = """If you want to be thought a liar, always tell the truth.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Logan P. Smith"
+    strQarray(18) = """I never expected to see the day when girls would get sunburned in the places they now do.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Will Rogers"
+    strQarray(19) = """Progress was all right. Only it went on too long.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "James Thurber"
+    strQarray(20) = """This shirt is dry clean only. Which means... it's dirty.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(21) = """I've never been married, but I tell people I'm divorced so they won't think something's wrong with me.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Elayne Boosler"
+    strQarray(22) = """To be sure of hitting the target, shoot first. And, whatever you hit, call it the target.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Ashleigh Brilliant"
+    strQarray(23) = """Always do sober what you said you’d do drunk. That will teach you to keep your mouth shut.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Ernest Hemingway"
+    strQarray(24) = """Did you ever walk in a room and forget why you walked in? I think that’s how dogs spend their lives.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Sue Murphy"
+    strQarray(25) = """I failed Math more times than I can count.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Steward Francis"
+    strQarray(26) = """Never exaggerate your faults. Your friends will attend to that.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Robert C. Edwards"
+    strQarray(27) = """When I die, I want to die like my grandfather who died peacefully in his sleep. Not screaming like all the passengers in his car.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Will Rogers"
+    strQarray(28) = """Knowledge is knowing a tomato is a fruit; Wisdom is not putting it in a fruit salad.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Brian Gerald O'Driscoll"
+    strQarray(29) = """Some cause happiness wherever they go; others whenever they go.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Oscar Wilde"
+    strQarray(30) = """Better to remain silent and be thought a fool, than to speak and remove all doubt.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Abraham Lincoln"
+    strQarray(31) = """Women who seek to be equal with men lack ambition.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Marilyn Monroe"
+    strQarray(32) = """The quickest way to double your money is to fold it over and put it back in your pocket.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Will Rogers"
+    strQarray(33) = """Before you criticize someone, you should walk a mile in their shoes. That way when you criticize them, you are a mile away from them and you have their shoes.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(34) = """By working faithfully eight hours a day you may eventually get to be boss and work twelve hours a day.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Robert Frost"
+    strQarray(35) = """People often say that motivation doesn’t last. Well, neither does bathing – that’s why we recommend it daily.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Zig Ziglar"
+    strQarray(36) = """Women who seek to be equal with men lack ambition.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Marilyn Monroe"
+    strQarray(37) = """If hard work were such a wonderful thing, surely the rich would have kept it all to themselves.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Lane Kirkland"
+    strQarray(38) = """Common sense is the collection of prejudices acquired by age eighteen.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Albert Einstein"
+    strQarray(39) = """Life’s tragedy is that we get old too soon and wise too late.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Benjamin Franklin"
+    strQarray(40) = """Without deviation from the norm progress is not possible.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Frank Zappa"
+    strQarray(41) = """The pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Winston Churchill"
+    strQarray(42) = """I have six locks on my door all in a row. When I go out, I lock every other one. I figure no matter how long somebody stands there picking the locks, they are always locking three.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Ealyne Boosler"
+    strQarray(43) = """People who think they know everything are a great annoyance to those of us who do.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Isaac Asimov"
+    strQarray(44) = """Opportunity is missed by most people because it is dressed in overalls and looks like work.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Thomas A. Edison"
+    strQarray(45) = """The only place success comes before work is in the dictionary.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Vince Lombardi"
+    strQarray(46) = """Hard work spotlights the character of people: some turn up their sleeves, some turn up their noses, and som don't turn up at all.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Frank Zappa"
+    strQarray(47) = """The harder i work, the luckier I get.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Samuel Goldwyn"
+    strQarray(48) = """Nothing will work unless you do.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Maya Angelou"
+    strQarray(49) = """I busted a mirror and got seven years bad luck, but my lawyer thinks he can get my five.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Steven Wright"
+    strQarray(50) = """There's a fine line between fishing and just standing on the shore like an idiot.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Steven Wright"
+    strQarray(51) = """Another term for balloon is bad breath holder.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Demetri Martin"
+    strQarray(52) = """A drunk driver is very dangerous. So is a drunk backseat driver if he's persuasive.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Demetri Martin"
+    strQarray(53) = """Employee of the month is a good example of how somebody can be both a winner and a loser at the same time.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Demetri Martin"
+    strQarray(54) = """I like refried beans. That's why I wanna try fried beans, because maybe they're just as good an we're just wasting time. You don't have to fry them again after all.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(55) = """I wish my name was Brian, because maybe sometimes people would misspell my name and call me Brain. That's like a free compliment and you don't even gotta be smart to notice it.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(56) = """Is a hippopotamus a hippopotamus, or just a really cool Opotamus?""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(57) = """I want to get a vending machine with fun-sized candy bars. The glass in front is a magnifying glass. You'll be mad, but it will be too late.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(58) = """You know when they have a fishing show on TV? They catch the fish and then let it go. They don't want to eat the fish. They just want to make it late for something.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Mitch Hedberg"
+    strQarray(59) = """There's no such thing as soy milk. It's soy juice.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Lewis Black"
+    strQarray(60) = """Money can't buy love, but it improves your bargaining position.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Christopher Marlowe"
+    strQarray(61) = """The wages of sin are death, but by the time taxes are taken out, it's just sort of a tired feeling.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Paula Poundstone"
+    strQarray(62) = """Adults are always asking kids what they want to be when they grow up because they are looking for ideas.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Paula Poundstone"
+    strQarray(63) = """It's a helluva start, being able to recognize what makes you happy.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Lucille Ball"
+    strQarray(64) = """If you cannot - in the long run - tell everyone what you have been doing, your doing has been worthless.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Erwin Schrodinger"
+    strQarray(65) = """A mathematician is a blind man in a dark room looking for a black cat which isn't there.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Charles Darwin"
+    strQarray(66) = """If there is a 50-50 chance that something can go wrong, then 9 times out of ten it will.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Paul Harvey"
+    strQarray(67) = """Algebraic symbols are used when you do not know what you are talking about.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Philippe Schnoebelen"
+    strQarray(68) = """Not everything that counts can be counted. Not everything that can be counted counts.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Albert Einstein"
+    strQarray(69) = """A person who never made a mistake never tried anything new.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Albert Einstein"
+    strQarray(70) = """Develop success from failures. Discouragement and failure are two of the surest stepping stones to success.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Dale Carnegie"
+    strQarray(71) = """A Harvard Medical School study has determined that rectal thermometers are still the best way to tell a baby's temperature. Plus, it really teaches the baby who's boss.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Tina Fey"
+    strQarray(72) = """Outside of a dog, a book is a man's best friend. Inside of a dog it's too dark to read.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Groucho Marx"
+    strQarray(73) = """The secret of life is honesty and fair dealing. If you can fake that, you've got it made.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Groucho Marx"
+    strQarray(74) = """No man goes before his time - unless the boss leaves early.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Groucho Marx"
+    strQarray(75) = """Always forgive your enemies - nothing annoys themn so much.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Oscar Wilde"
+    strQarray(76) = """Some cause happiness wherever they go; others whenever they go.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Oscar Wilde"
+    strQarray(77) = """I want to hold a mirror up to society and then win the world record for biggest mirror.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Tracy Morgan"
+    strQarray(78) = """The future is like a Japanese game show; you have no idea what's going on.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Tracy Morgan"
+    strQarray(79) = """A book hasn't caused me this much trouble since Where's Waldo went to that barber pole factory.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Tracy Morgan"
+    strQarray(80) = """I don't deserve this award. But I have arthritis, and i don't deserve that either.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Benny"
+    strQarray(81) = """Hors D'oeuvre: A ham sandwich cut into forty pieces.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Benny"
+    strQarray(82) = """I base most of my fashion taste on what doesn't itch.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Gilda Radner"
+    strQarray(83) = """My grandmother started walking five miles a day when she was sixty. She's ninety-seven now, and we don't know where the hell she is.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Ellen DeGeneres"
+    strQarray(84) = """Normal is nothing more than a cycle on a washing machine.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Whoopi Goldberg"
+    strQarray(85) = """I don't have pet peeves. I have whole kennels of irritation.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Whoopi Goldberg"
+    strQarray(86) = """I consider myself to be a pretty good judge of people. That's why I don't like any of them""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Roseanne Barr"
+    strQarray(87) = """Housework can't kill you, but why take a chance?""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Phyllis Diller"
+    strQarray(88) = """I want my children to have all the things I couldn't afford. Then I want to move in with them.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Phyllis Diller"
+    strQarray(89) = """My photographs don't do me justice. They just look like me.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Phyllis Diller"
+    strQarray(90) = """Too bad there's not such a thing as a golden skunk, because you'd probably be proud to be sprayed by one.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(91) = """If trees could scream, would we be so cavalier about cutting them down? We might, if they screamed all the time, for no good reason.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(92) = """I can picture in my mind a world without war, a world without hate. And I can picture us attacking that world because they'd never expect it.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(93) = """It takes a big man to cry, but it takes a bigger man to laugh at that man.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(94) = """If you ever catch fire, try not to see yourself in the mirror. I bet that's what really throws you into a panic.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(95) = """Children need encouragement. If a kid gets an answer right, tell him it was a lucky guess. That way he develops a good, lucky feeling.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(96) = """When you go in for a job interview, I think a good thing to ask is if they ever press charges.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(97) = """Instead of trying to build newer and bigger weapons of destruction, we should be thinking about getting more use out of the ones we already have.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(98) = """If you're robbing a bank and your pants fall down, I think it's okay to laugh, and let your hostages laugh too, because come on - life is funny.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+    strQarray(99) = """If you're in a war, instead of throwing a hand grenade at the enemy, throw one of those small pumpkins. Maybe it'll make everyone think how stupid war is, and while they are thinking, you can throw a real grenade at them.""" _
+            & vbNewLine & Chr(9) & Chr(151) & "Jack Handy"
+          
+        Randomize
+        Dim iGrbQ As Integer
+        iGrbQ = Int((100 - 0 + 1) * Rnd + 0)
+        strQ = strQarray(iGrbQ)
+End Sub
+

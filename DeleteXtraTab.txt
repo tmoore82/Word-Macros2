@@ -1,0 +1,14 @@
+Public Sub DeleteXtraTabNT()
+
+'Just like DeleteXtraSpace but for tabs
+
+Application.ScreenUpdating = False
+
+FindThis = "^9{2,}"
+ReplaceWithThis = "^t"
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+Application.ScreenUpdating = True
+
+End Sub

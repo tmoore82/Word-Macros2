@@ -1,3 +1,13 @@
-README Test 1.0
+README v2.0
 
-Setting up to learn GitHub.
+Here I'll summarize how these developed. Each macro has comments at the beginning to explain what it does and what it's for. If you need more explanation or have trouble with any of them, feel free to contact me. moore dot tyler dot n at gmail dot com.
+
+I work in document production (word processing) in the legal field. We use MS Office with some third-party add-ins like DocXTools and Payne Numbering. Sometimes those tools work great, and other times they're inefficient. They work with one type of document but not another. They lack some resources completely.
+
+I have a basic knowledge of programming, but I would describe myself as a casual hobbyist. At least, that's been true so far. I started using Word's macro recorder to create tools for repetitive tasks. When I realized that I understood the language I was looking at (more or less), I started modifying code and combining different tools. As I learned what functions and methods were available, I was able to anticipate the need for a variety of macros. I also started to figure out why certain of our tools were ineffective and how I could beef them up. 
+
+Some of what I've built here are reproductions of existing third-party tools that, IMHO, work faster and/or better. We've been able to eliminate our dependence on a lot of the tools. 
+
+Most of my macros are original. I've built them in downtime at work over the last four months (as of 10/03/2012). 
+
+It should be easy to tell the early ones from the later ones. At first I didn't know anything about VBA, and I was cobbling stuff together from the recordings, which often record a lot of unnecessary properties. I was more concerned about getting a working product than optimizing the code. Hopefully, the later code shows some significant improvement. 

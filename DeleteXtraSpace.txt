@@ -1,0 +1,23 @@
+Public Sub DeleteXtraSpaceNT()
+'
+' DeleteXtraSpace Macro
+'
+'This macro, true to its name, deletes extra spaces.
+'PDF-to-Word conversions often show up with any number
+'of spaces between words, depending on the white space
+'in the original. Or, if you have a doc that uses
+'two spaces after a period, and you only want one,
+'this cleans up the extras.
+'
+'If you need a document to have two spaces after a period,
+'run this in combination with TwoAfterP.
+
+Application.ScreenUpdating = False
+
+FindThis = " {2,}"
+ReplaceWithThis = " "
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+Application.ScreenUpdating = True
+End Sub

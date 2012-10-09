@@ -1,0 +1,15 @@
+Public Sub Table2Text_NT()
+'Version 1
+
+'tmoore82
+'8/27/12
+
+'Often when cleaning up a document, it is easier to convert tables
+'to text and then restore the table. This macro converts all tables
+'in a doc to text, with each cell separated by a paragraph mark.
+
+For Each Table In Document.Tables
+    Selection.Rows.ConvertToText Separator:=wdSeparateByParagraphs, _
+        NestedTables:=True
+Next Table
+End Sub

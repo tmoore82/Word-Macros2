@@ -1,0 +1,368 @@
+'Version 2
+
+'tmoore82
+'10/02/12
+
+'Six Parts
+'Combines with ArbyNT
+
+'Most of this is client-specific cleanup. Hard to know, 
+'in my limited experience, if anyone else could use this.
+'This one isn't exactly designed to run "out of the box."
+
+Public Sub ArbyCleanNTp1()
+
+
+On Error GoTo ErrMsg
+
+'place cursor at the beginning of the document
+Selection.HomeKey Unit:=wdStory
+
+'run the following macro (which populates an array with dates)
+FillstrDatesNT
+
+'set up a variable for looping through the array
+Dim d As Integer
+d = 31
+
+'change all the date text (1st, NTnd, 3rd, etc.) to hidden text
+'this is to avoid deleting them when we clean up numbers in a later step
+Do Until d = 0
+    d = d - 1
+
+    With Selection.Find
+        .Text = strDatesArray(d)
+        .Wrap = wdFindContinue
+        .Execute
+        If .Found Then Selection.Font.Hidden = True
+            Selection.MoveRight Unit:=wdCharacter, Count:=1
+    End With
+Loop
+
+'go to the next part
+ArbyCleanNTp2
+
+Exit Sub
+    
+ErrMsg:
+    UhOhNT
+End Sub
+Private Sub ArbyCleanNTp2()
+
+On Error GoTo ErrMsg
+
+Selection.HomeKey Unit:=wdStory
+
+'refresh the sceen so the user knows what's happening
+Application.ScreenRefresh
+
+'replace all the CRs with pilcrows
+
+ FindThis = "^13"
+ ReplaceWithThis = "^p"
+ 
+ Call FindDefaultNT(FindThis, ReplaceWithThis)
+    
+ArbyCleanNTp3
+
+Exit Sub
+
+ErrMsg:
+    UhOhNT
+End Sub
+Private Sub ArbyCleanNTp3()
+
+On Error GoTo ErrMsg
+
+Dim nArbyReplace
+nArbyReplace = 1
+'find the combination pilcrow#, and delete it
+
+WhichCasep3:
+
+Select Case nArbyReplace
+ 
+    Case 1
+        
+        FindThis = "^13[0-9]{1,NT}"
+        ReplaceWithThis = Chr(0)
+
+    Case 2
+'find the combination number-tab, and delete it
+        FindThis = "[0-9]^t"
+        ReplaceWithThis = Chr(0)
+
+    Case 3
+'find all the tabs and delete them
+        FindThis = "^t"
+        ReplaceWithThis = Chr(0)
+
+    Case 4
+'find "Page ####" and delete it.
+        FindThis = "Page [0-9]{1,4}"
+        ReplaceWithThis = Chr(0)
+    
+    Case 5
+'find numbers butting up against capital letters, and delete them
+        FindThis = "[0-9]{1,NT}([A-Z])"
+        ReplaceWithThis = "\1"
+
+    Case 6
+'find numbers butting up against lowercase letters, and delete them
+        FindThis = "[0-9]{1,NT}([a-z])"
+        ReplaceWithThis = "\1"
+    
+    Case 7
+ 'find paragraph marks that aren't right before a capital A and delete them
+
+        FindThis = "^13([!A])"
+        ReplaceWithThis = " \1"
+    
+    Case Else
+    
+        GoTo MovingOnp3
+    
+End Select
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+nArbyReplace = nArbyReplace + 1
+
+GoTo WhichCasep3
+
+MovingOnp3:
+
+Selection.HomeKey Unit:=wdStory
+
+FindQ:
+ 'find the capital letter Q, and add a paragraph mark before it
+ 'this could be a problem when sentences begin with Q (rare)
+ 'or a proper name that starts with Q appears in the selection (rare)
+ 'remember to proofread for those (MsgBox reminder at the end)
+    With Selection.Find
+        .Text = "Q"
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .MatchWholeWord = False
+        .MatchWildcards = True
+    End With
+    
+    Selection.Find.Execute
+    
+    If Selection.Find.Found Then
+        Selection.TypeParagraph
+        Selection.TypeText Text:="Q"
+        GoTo FindQ:
+    End If
+    
+ 'find anywhere lowercase letters butt up against a pilcrow
+ 'that is butting up against a capital letter.
+ 'Replace the pilcro with a space
+        FindThis = "([a-z])^13([A-Z])"
+        ReplaceWithThis = "\1 \2"
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+    
+ 'find any section breaks and replace them with pilcrows
+        FindThis = "^b"
+        ReplaceWithThis = "^13"
+        
+Call FindDefaultNT(FindThis, ReplaceWithThis)
+
+'go to the next part
+ArbyCleanNTp4
+
+Exit Sub
+ErrMsg:
+    UhOhNT
+
+End Sub
+Private Sub ArbyCleanNTp4()
+
+On Error GoTo ErrMsg
+
+nArbyReplace = 1
+
+WhichCasep4:
+
+Select Case nArbyReplace
+
+    Case 1
+        'find paragraph, A., space, replace with paragraph, A.,tab
+            FindThis = "^13A. "
+            ReplaceWithThis = "^pA." & Chr(9)
+           
+    Case 2
+        'find A., replace with paragraph, A.,tab
+            FindThis = "A."
+            ReplaceWithThis = "^pA." & Chr(9)
+         
+    Case 3
+        'find paragraph, Q., replace with paragraph, Q.,tab
+            FindThis = "^pQ."
+            ReplaceWithThis = "^pQ.^t"
+    
+    Case Else
+    
+        GoTo MovingOnp4
+
+End Select
+
+Call FindDefaultNT(FindThis, ReplaceWithThis)
+
+nArbyReplace = nArbyReplace + 1
+
+GoTo WhichCasep4
+
+MovingOnp4:
+
+'go to the next part
+ArbyCleanNTp5
+
+Exit Sub
+
+ErrMsg:
+    UhOhNT
+End Sub
+Private Sub ArbyCleanNTp6()
+
+On Error GoTo ErrMsg
+
+'refresh the sceen so the user knows what's happening
+Application.ScreenRefresh
+
+StyleSwap:
+'select the whole story and turn off hidden text
+    Selection.Find.ClearFormatting
+    Selection.Find.Style = ActiveDocument.Styles("Body Text")
+    With Selection.Find
+        .Text = ""
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = True
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+    Selection.Find.Execute
+
+    If Selection.Find.Found = True Then
+        Selection.Style = "Q&A"
+        GoTo StyleSwap
+    Else
+    End If
+
+Selection.HomeKey Unit:=wdStory
+ActiveWindow.ActivePane.View.ShowAll = True
+Selection.WholeStory
+Selection.Font.Hidden = False
+Selection.HomeKey Unit:=wdStory
+
+    'go back and find transcript citations
+    'making their style "Transcript Cite"
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.Style = "Transcript Cite"
+    With Selection.Find
+        .Text = "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}" & Chr(32) & Chr(150) & Chr(32) & "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}"
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = True
+        .Execute Replace:=wdReplaceAll
+    End With
+
+Selection.HomeKey Unit:=wdStory
+Dim tcr As Range
+
+    'go back and find transcript citations
+    'make sure the paragraph breaks in the right place
+    Selection.Find.Style = "Transcript Cite"
+    With Selection.Find
+        .Text = "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}" & Chr(32) & Chr(150) & Chr(32) & "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}[a-z]"
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .MatchWildcards = True
+        .Execute Replace:=wdReplaceAll
+    End With
+
+    Do Until Selection.Find.Found = False
+        Selection.Find.Execute
+        Set tcr = ActiveDocument.Range(Start:=Selection.Start, End:=Selection.End)
+        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.TypeParagraph
+        Selection.Style = "Q&A"
+    Loop
+
+Selection.HomeKey Unit:=wdStory
+
+    'go back and find transcript citations butting up against upper case letters
+    'make sure the paragraph breaks in the right place
+    Selection.Find.Style = "Transcript Cite"
+    With Selection.Find
+        .Text = "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}" & Chr(32) & Chr(150) & Chr(32) & "[0-9]{1,4}" & Chr(58) & "[0-9]{1,2}[A-Z]"
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .MatchWildcards = True
+        .Execute Replace:=wdReplaceAll
+    End With
+
+    Do Until Selection.Find.Found = False
+        Selection.Find.Execute
+        Set tcr = ActiveDocument.Range(Start:=Selection.Start, End:=Selection.End)
+        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.TypeParagraph
+        Selection.Style = "Q&A"
+    Loop
+
+DeleteXtraParaNT
+DeleteXtraAENT
+DeleteXtraSpaceNT
+DeleteXtraTabNT
+
+'cursor back to the beginning, type a paragraph, back to the beginning
+Selection.HomeKey Unit:=wdStory
+Selection.TypeParagraph
+Selection.HomeKey Unit:=wdStory
+
+'insert the placeholder for the title material
+Selection.Style = ActiveDocument.Styles("Title")
+Selection.TypeText Text:="[Claimant] v. [Defendant]"
+Selection.TypeParagraph
+Selection.TypeText Text:="Matter No. [##########]"
+
+Selection.TypeParagraph
+
+Selection.TypeText Text:="[Date] [Claimant] Proceedings " & Chr(150) & " Vol. [IIII]" & Chr(32)
+Selection.Font.Hidden = False
+Selection.TypeParagraph
+
+'cursor back to the beginning, turn hidden characters back on
+Selection.HomeKey Unit:=wdStory
+
+
+'turn screenupdating back on
+Application.ScreenUpdating = True
+
+'remind users to check the Q problem
+MsgBox ("Check to make sure paragraphs haven't been split at" _
+            & vbNewLine & Chr(9) & "-proper names starting with Q" _
+            & vbNewLine & Chr(9) & "-or sentences starting with Q." _
+            & vbNewLine & vbNewLine & "Use Find & Replace to repair any errors.")
+
+'display the final message that the macro is complete.
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+    UhOhNT
+
+End Sub

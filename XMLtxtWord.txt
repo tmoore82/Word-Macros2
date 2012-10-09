@@ -1,0 +1,203 @@
+'At one point, I thought this would be a really necessary tool for 
+'getting the cleanest possible text out of a .docx file. Turns out
+'there are easier ways. Still, this was a good exercise. And it will
+'extract all of the plain text out of an XML file, which has other uses,
+'such as removing password restriction from a doc. 
+
+'Maybe the most usefull stuff is from ozgrid and rondebruin. These
+'subs clear directories and create/copy zip files. That's good stuff!
+
+Public Sub CreateZip_NT()
+
+strDMM = "C:\dmm"
+
+strFullName = ActiveDocument.FullName
+strNewName = strFullName & "-copy.zip"
+DesFold = strDMM
+
+ActiveDocument.SaveAs2 FileName:=strNewName
+ActiveDocument.Close
+
+DeleteFile_NT (strDMM)
+Call Copy_Files_NT(FromFolder:=strNewName, ToFolder:=DesFold, FolderItself:=False)
+
+End Sub
+Private Sub DeleteFile_NT(ClearPath As String)
+
+'copied from http://www.rondebruin.nl/folder.htm on 08/20/12
+
+'Delete all files and subfolders
+'Be sure that no file is open in the folder
+    Dim FSO As Object
+    Dim MyPath As String
+
+    Set FSO = CreateObject("scripting.filesystemobject")
+
+    MyPath = ClearPath
+
+    If Right(MyPath, 1) = "\" Then
+        MyPath = Left(MyPath, Len(MyPath) - 1)
+    End If
+
+    If FSO.FolderExists(MyPath) = False Then
+        MsgBox MyPath & " doesn't exist"
+        Exit Sub
+    End If
+
+    On Error Resume Next
+    
+    'Delete files
+    FSO.DeleteFile MyPath & "\*.*", True
+    
+    'Delete subfolders
+    FSO.deletefolder MyPath & "\*.*", True
+    
+    On Error GoTo 0
+
+End Sub
+Private Sub Copy_Files_NT(FromFolder As String, ToFolder As String, _
+    Optional FolderItself As Boolean = False, _
+    Optional ErrorFound As Boolean = False)
+
+'copied from http://www.ozgrid.com/forum/showthread.php?t=7802T3 on 08/20/12
+
+    Dim FromFolderVar As Variant, ToFolderVar As Variant
+    Dim ShellApp As Object
+    Dim ItemCount As Long, AdditionalCount As Long
+
+    'On Error GoTo ErrMsg
+    ErrorFound = False: Err.Clear
+
+    FromFolderVar = CVar(FromFolder)
+    ToFolderVar = CVar(ToFolder)
+    Set ShellApp = CreateObject("Shell.Application")
+
+    With ShellApp
+
+        ItemCount = .Namespace(ToFolderVar).items.Count
+
+        If FolderItself Then
+            AdditionalCount = 1
+            .Namespace(ToFolderVar).CopyHere .Namespace(FromFolderVar)
+        Else
+            AdditionalCount = .Namespace(FromFolderVar).items.Count
+            .Namespace(ToFolderVar).CopyHere .Namespace(FromFolderVar).items
+        End If
+
+    End With
+
+	Sleep 2000
+
+    Set ShellApp = Nothing
+
+End Sub
+Public Sub XMLtxtWord_NT()
+'Version 1
+'Beta Release v1.0
+'tmoore82
+'10/03/12
+
+CreateZip_NT
+ExtractTXT_NT
+
+Exit Sub
+ErrMsg:
+
+UhOhNT
+
+End Sub
+Private Sub ExtractTXT_NT()
+
+'declare and initiate a variable for our regular expression
+Dim RegExFindThis
+RegExFindThis = "<.*?>"
+
+'declare and initiate a regular expression object
+Dim RegEx
+Set RegEx = CreateObject("vbscript.regexp")
+
+'tell the regex what to look for and to search the whole doc
+With RegEx
+    .Pattern = RegExFindThis
+    .Global = True
+End With
+
+'set constants for reading and writing (because my memory can't handle numbers)
+Const ForReading = 1
+Const ForWriting = 2
+Const ForAppending = 8
+
+    'create a file system object
+    'this gains access to the computer's file system
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Set objNewFile = objFSO.CreateTextFile("C:\dmm\word\document.txt", True)
+    Set objFile = objFSO.OpenTextFile("C:\dmm\word\document.xml", ForReading)
+    strXML = objFile.Readall
+    objFile.Close
+    objNewFile.WriteLine strXML
+    objNewFile.Close
+    
+Dim n As Integer
+n = 1
+
+Do Until n > 4
+
+    
+    'initiate a variable  for working with the file
+    Set objFile2 = objFSO.OpenTextFile("C:\dmm\word\document.txt", ForReading)
+    
+    'initiate a variable to read and hold the text of the doc
+    strText = objFile2.Readall
+    
+    'close the file
+    objFile2.Close
+    
+    Select Case n
+    
+        Case 1
+            strNewText = Replace(strText, "</w:p>", "repaira")
+        Case 2
+            strNewText = Replace(strText, "repaira", "\n")
+        Case 3
+            strNewText = Replace(strText, "<w:t> </w:t>", " ")
+        Case 4
+            strNewText = RegEx.Replace(strText, "")
+    End Select
+    
+    'open the file for writing
+    Set objFile3 = objFSO.OpenTextFile("C:\dmm\word\document.txt", ForWriting)
+    
+    'write the altered text
+    objFile3.WriteLine strNewText
+    
+    'close the file
+    objFile3.Close
+    
+    n = n + 1
+
+Loop
+
+'Create a Word Object
+Dim objWord
+Set objWord = CreateObject("Word.Application")
+
+'make Word hidden
+With objWord
+    .Visible = False
+    .Documents.Add
+    .Selection.InsertFile "C:\dmm\word\document.txt"
+    .Selection.WholeStory
+    .Selection.Style = "Body Text"
+    .Selection.HomeKey
+End With
+
+'make Word visible
+With objWord
+    .Visible = True
+End With
+
+'Remind the user to save
+CompletedNT
+
+End Sub

@@ -1,0 +1,67 @@
+Public Sub FontSample_NT()
+'Version 2
+'BetaRelease v1.0
+'tmoore82
+'10/02/12
+
+
+'Original copied from http://support.microsoft.com/kb/NT09NT05
+'10/02/12
+
+'More of a designer's tool than a doc processing need. I was trying
+'to select a font for a project, and I wanted to see what the title
+'would look like in every possible font. Then I thought of a couple
+'alternative titles. This allowed a quick scan of how it would look
+'in all the fonts available on my system.
+
+On Error GoTo ErrMsg
+
+Dim n As Integer
+Dim FontTable As Table
+
+'Start off with a new document
+Set DesDoc = Documents.Add
+
+'get the sample text from the operator
+Dim strSampleText As String
+strSampleText = InputBox("What is the text you would like to see?")
+
+'get the font size the user would like to see
+Dim nFontSize As Integer
+nFontSize = InputBox("What font size would you like?" & vbNewLine & vbNewLine & "(Must be a whole number)")
+
+'Add a table and set the table header
+Set FontTable = DesDoc.Tables.Add(Selection.Range, FontNames.Count + 1, 2)
+With FontTable
+    .Borders.Enable = False
+    .Cell(1, 1).Range.Font.Name = "Arial"
+    .Cell(1, 1).Range.Font.Bold = 1
+    .Cell(1, 1).Range.InsertAfter "Font Name"
+    .Cell(1, 2).Range.Font.Name = "Arial"
+    .Cell(1, 2).Range.Font.Bold = 1
+    .Cell(1, 2).Range.InsertAfter "Font Example"
+End With
+
+'Go through all the fonts and add them to the table
+For n = 1 To FontNames.Count
+    With FontTable
+        .Cell(n + 1, 1).Range.Font.Name = "Arial"
+        .Cell(n + 1, 1).Range.Font.Size = nFontSize
+        .Cell(n + 1, 1).Range.InsertAfter FontNames(J)
+        .Cell(n + 1, 2).Range.Font.Name = FontNames(J)
+        .Cell(n + 1, 2).Range.Font.Size = nFontSize
+        .Cell(n + 1, 2).Range.InsertAfter strSampleText
+    End With
+Next n
+
+FontTable.Sort SortOrder:=wdSortOrderAscending
+
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

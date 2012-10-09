@@ -1,0 +1,24 @@
+Public Sub SelectFiles_NT()
+'Version 2
+
+'tmoore82
+'10/02/12
+
+'Sometimes it's necessary (or simpler) to let a user choose a file,
+'whether to open it, to edit it, or to use it as a reference point.
+'This macro by itself just stores the file path as a string,
+'but combined with other macros, it can share that reference
+'and use it to manipulate selected files.
+
+    'Declare a variable as a FileDialog object
+    'and create a FileDialog object as a File Picker dialog box
+    Dim diaSelectFile As FileDialog
+    Set diaSelectFile = Application.FileDialog(msoFileDialogFilePicker)
+
+    diaSelectFile.Show
+    
+    strPickedFile = diaSelectFile.SelectedItems(1)
+
+    'Set object variable to Nothing
+    Set diaSelectFile = Nothing
+End Sub

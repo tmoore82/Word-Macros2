@@ -1,0 +1,163 @@
+Sub LabelsNT()
+'Version 3
+
+'tmoore82
+'10/01/2012
+
+'v1.2
+'updated to skip rows used as spacers
+
+'This has more or less the same function as a mail merge,
+'but it doesn't require you to have fields to pull from.
+'Labels copies each paragraph in your source document
+'to a label (table cell) in the destination document.
+
+'It was developed for labels, but, clearly, it can also be really
+'useful for populating tables.
+
+'This includes a progress bar, but without the form and code,
+'you'll need to leave those commented out.
+
+    'On Error GoToErrMsg:
+    
+    Dim iNumCol As Integer
+    iNumCol = InputBox("How many columns are in the label template?")
+'    MsgBox (iNumCol)
+    Application.ScreenUpdating = False
+    
+    Set SrcDoc = ActiveDocument
+    Application.Run MacroName:="NextWindow"
+    
+    Set DesDoc = ActiveDocument
+    
+    Dim iCurCol As Integer
+    iCurCol = 1
+    Dim nCurRow As Integer
+    nCurRow = 1
+    
+    Dim nWidth
+    nWidth = Selection.Tables(1).Columns(1).PreferredWidth
+    
+    Dim nHeight
+    nHeight = Selection.Tables(1).Rows(1).Height
+    
+    SrcDoc.Activate
+    
+    Selection.HomeKey Unit:=wdStory
+    Word.Application.WindowState = wdWindowStateMinimize
+    Dim iLabelCount As Integer
+    iLabelCount = ActiveDocument.Paragraphs.Count
+ 
+    Dim iCounter As Integer
+    iCounter = 1
+
+    Dim pb As Integer
+    pb = 1
+    
+    If iNumCol = 1 Then
+    
+            'ProgressBar.Show
+            'Dim sDescription As String
+            'Dim sPercentComplete As Single
+            
+        Do Until iCounter > iLabelCount
+    
+
+           ' sDescription = "Macro Progress"
+            'sPercentComplete = (pb / iLabelCount) * 100
+            'ProgressBar.Increment sPercentComplete, sDescription
+            
+            'pb = pb + 1
+    
+            Selection.MoveDown Unit:=wdParagraph, Extend:=wdExtend
+            Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+            
+            Selection.Copy
+    
+            DesDoc.Activate
+            
+            Selection.PasteAndFormat (wdFormatOriginalFormatting)
+            Selection.MoveRight Unit:=wdCell
+            nCurRow = nCurRow + 1
+            
+            If Selection.Tables(1).Rows(nCurRow).Height <> nHeight Then
+                Selection.MoveDown Unit:=wdLine, Count:=1
+                nCurRow = nCurRow + 1
+            End If
+            
+            SrcDoc.Activate
+            
+            Selection.MoveDown Unit:=wdParagraph, Count:=1
+            
+            iCounter = iCounter + 1
+        Loop
+    
+    Else
+    
+        Do Until iCounter > iLabelCount
+    
+            'ProgressBar.Show
+            'sDescription = "Macro Progress"
+            'sPercentComplete = (pb / iLabelCount) * 100
+            'ProgressBar.Increment sPercentComplete, sDescription
+            
+            'pb = pb + 1
+    
+            Selection.MoveDown Unit:=wdParagraph, Extend:=wdExtend
+            Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+            
+            Selection.Copy
+    
+            DesDoc.Activate
+            
+            Selection.PasteAndFormat (wdFormatOriginalFormatting)
+            Selection.MoveRight Unit:=wdCell
+            
+'            MsgBox (Selection.Tables(1).Rows(nCurRow).Height)
+            
+            If Selection.Tables(1).Rows(nCurRow).Height <> nHeight Then
+                Selection.MoveDown Unit:=wdLine, Count:=1
+                nCurRow = nCurRow + 1
+            End If
+            
+            iCurCol = iCurCol + 1
+    '        MsgBox (iCurCol)
+            If iCurCol = iNumCol Then
+                iCurCol = 0
+    '            MsgBox (iCurCol)
+            ElseIf Selection.Tables(1).Columns(iCurCol).PreferredWidth <> nWidth Then
+                    Selection.MoveRight Unit:=wdCell
+                    iCurCol = iCurCol + 1
+    '                MsgBox (iCurCol)
+                    If iCurCol = iNumCol Then
+                        iCurCol = 0
+                        nCurRow = nCurRow + 1
+    '                    MsgBox (iCurCol)
+                    Else
+                    End If
+            End If
+    
+            SrcDoc.Activate
+            
+            Selection.MoveDown Unit:=wdParagraph, Count:=1
+            
+            iCounter = iCounter + 1
+        Loop
+        
+    End If
+    
+'    Unload ProgressBar
+    
+    CompletedNT
+    
+    Application.ScreenUpdating = True
+    Word.Application.WindowState = wdWindowStateMaximize
+    DesDoc.Activate
+
+    Exit Sub
+    
+ErrMsg:
+
+UhOhNT
+
+End Sub

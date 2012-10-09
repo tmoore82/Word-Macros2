@@ -1,0 +1,136 @@
+Sub SuperROGsNT()
+'version 9
+
+'tmoore82
+'10/02/12
+
+'Legal professionals will know the value of this. It is a macro
+'for auto-generating interrogatory response documents.
+
+'Requires MyStyles macro.
+
+'This includes a progress bar, but without the form and code,
+'you'll have to leave those commented out.
+
+On Error GoTo ErrMsg
+Set SrcDoc = ActiveDocument
+Application.ScreenUpdating = False
+
+Set DesDoc = Documents.Add
+
+MyStylesNT
+
+Dim RespTitle As String
+RespTitle = InputBox("What is the title of your new document?" & vbNewLine & vbNewLine & "Example: Interrogatories and Responses", "Title")
+
+Selection.Style = ActiveDocument.Styles("RogCenter")
+Selection.TypeText Text:=RespTitle
+Selection.EndKey Unit:=wdLine
+Selection.TypeParagraph
+
+SrcDoc.Activate
+
+Selection.HomeKey Unit:=wdStory
+
+Dim rogint As Integer
+
+rogint = ActiveDocument.Paragraphs.Count
+langreq = InputBox("What is the language of the request?" & vbNewLine & vbNewLine & "(Note: Include any characters and punctuation but not the numbers.)" & vbNewLine & vbNewLine & "Example: Interrogatory Request No.", "Original")
+langresp = InputBox("What is the language of the response?" & vbNewLine & vbNewLine & "(Note: Include any characters and punctuation but not the numbers.)" & vbNewLine & vbNewLine & "Example: Response to Interrogatory Request No.", "Response")
+
+Word.Application.WindowState = wdWindowStateMinimize
+
+'Dim I As Integer
+        'I = 1
+
+        'ProgressBar.Show
+        'Dim sDescription As String
+        'Dim sPercentComplete As Single
+        
+Do While rogint > 0
+
+        'sDescription = "Macro Progress"
+        'sPercentComplete = (I / ActiveDocument.Paragraphs.Count) * 100
+'        ProgressBar.Increment sPercentComplete, sDescription
+        
+        'I = I + 1
+        
+    rogint = rogint - 1
+
+    Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
+    
+    Selection.Copy
+    
+    DesDoc.Activate
+
+    Selection.Style = ActiveDocument.Styles("RogHead")
+     
+    Selection.TypeText Text:=langreq
+    Selection.TypeText Text:=Chr(32)
+    
+    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+        PreserveFormatting:=False
+    Selection.TypeText Text:="seq req"
+    Selection.Fields.Update
+    Selection.EndKey Unit:=wdLine
+    
+    Selection.TypeText Text:=":"
+
+    With Selection.Font
+        .Bold = False
+        .Underline = wdUnderlineNone
+        .AllCaps = False
+    End With
+        
+    Selection.TypeText Text:=Chr(32) & Chr(32)
+    
+    Selection.TypeParagraph
+
+    Selection.PasteAndFormat (wdFormatSurroundingFormattingWithEmphasis)
+    
+    Selection.Style = ActiveDocument.Styles("RogHead")
+
+    Selection.TypeText Text:=langresp & Chr(32)
+    
+    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+        PreserveFormatting:=False
+    Selection.TypeText Text:="seq resp"
+    Selection.Fields.Update
+    Selection.EndKey Unit:=wdLine
+    
+    Selection.TypeText Text:=":"
+      
+    With Selection.Font
+        .Bold = False
+        .Underline = wdUnderlineNone
+        .AllCaps = False
+    End With
+        
+    Selection.TypeText Text:=Chr(32) & Chr(32)
+    
+    Selection.TypeParagraph
+    
+    Selection.TypeParagraph
+
+    SrcDoc.Activate
+    
+    Selection.MoveDown Unit:=wdParagraph, Count:=1
+    
+ Loop
+ 
+'Unload ProgressBar
+Selection.WholeStory
+Selection.Fields.Update
+CompletedNT
+Application.ScreenUpdating = True
+Word.Application.WindowState = wdWindowStateMaximize
+DesDoc.Activate
+Selection.HomeKey Unit:=wdStory
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

@@ -1,0 +1,15 @@
+Public Sub Num2TextNT()
+'Version 1
+'Beta Release v1.0
+'tmoore82
+'10/02/12 (undated until now)
+
+'Converts automatic numbering to typed text.
+'Useful for getting rid of numbered lists, especially
+'when they're corrupt.
+
+Selection.WholeStory
+Selection.Range.ListFormat.ConvertNumbersToText
+Selection.HomeKey Unit:=wdStory
+
+End Sub

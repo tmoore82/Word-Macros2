@@ -1,0 +1,14 @@
+Sub StyleTable_NT()
+'Version 1
+'tmoore82
+'9/25/12
+
+'This will apply column and row bands to the first table in a doc
+'Again, no real advantage over doing it manually except in combination
+'with other macros.
+
+    Selection.Tables(1).ApplyStyleColumnBands = False
+    Selection.Tables(1).ApplyStyleRowBands = True
+    Selection.Tables(1).Style = "Medium Shading 1 - Accent 1"
+
+End Sub

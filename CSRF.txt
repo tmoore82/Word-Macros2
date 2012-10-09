@@ -1,0 +1,241 @@
+Public Sub CSRFNT()
+'Version 3
+
+'tmoore82
+'10/02/12 (undated until now)
+
+'This is probably about as sloppy as it gets.
+'DocXTools has a feature that clears styles and retains formatting.
+'As much as I think this is a bad idea and, at least in my application,
+'doesn't really save much time anyway, I decided to see if
+'I could reproduce the effects. I did, but I'm sure there's a better way.
+
+On Error GoTo ErrMsg
+
+Dim I As Integer
+Dim SrcDoc As Document
+Set SrcDoc = ActiveDocument
+Selection.HomeKey Unit:=wdStory
+Dim DesDoc As Document
+Set DesDoc = Documents.Add
+
+Dim strFontFormat As Font
+Dim strParaFormat As ParagraphFormat
+
+Documents(SrcDoc).Activate
+Word.Application.WindowState = wdWindowStateMinimize
+
+Selection.HomeKey Unit:=wdStory
+
+Application.ScreenUpdating = False
+
+Dim ThisWord As Range
+
+Dim StopPoint As Integer
+StopPoint = ActiveDocument.Paragraphs.Count
+
+Dim sDescription As String
+Dim sPercentComplete As Single
+
+
+For I = 1 To StopPoint Step 1
+
+    Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
+    Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+    If Selection.Start = Selection.End Then
+        'MsgBox ("Nothing to Copy")
+        Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdMove
+        GoTo TryAgain
+    Else
+    
+          Set strFontFormat = Selection.Font.Duplicate
+
+                Dim SrcLeftIndent
+                SrcLeftIndent = Selection.ParagraphFormat.LeftIndent
+
+                Dim SrcRightIndent
+                SrcRightIndent = Selection.ParagraphFormat.RightIndent
+
+                Dim SrcSpaceBefore
+                SrcSpaceBefore = Selection.ParagraphFormat.SpaceBefore
+
+                Dim SrcSpaceBeforeAuto
+                SrcSpaceBeforeAuto = Selection.ParagraphFormat.SpaceBeforeAuto
+
+                Dim SrcSpaceAfter
+                SrcSpaceAfter = Selection.ParagraphFormat.SpaceAfter
+
+                Dim SrcSpaceAfterAuto
+                SrcSpaceAfterAuto = Selection.ParagraphFormat.SpaceAfterAuto
+
+                Dim SrcLineSpacingRule
+                SrcLineSpacingRule = Selection.ParagraphFormat.LineSpacingRule
+
+                Dim SrcAlignment
+                SrcAlignment = Selection.ParagraphFormat.Alignment
+
+                Dim SrcWidowControl
+                SrcWidowControl = Selection.ParagraphFormat.WidowControl
+
+                Dim SrcKeepWithNext
+                SrcKeepWithNext = Selection.ParagraphFormat.KeepWithNext
+
+                Dim SrcKeepTogether
+                SrcKeepTogether = Selection.ParagraphFormat.KeepTogether
+
+                Dim SrcPageBreakBefore
+                SrcPageBreakBefore = Selection.ParagraphFormat.PageBreakBefore
+
+                Dim SrcNoLineNumber
+                SrcNoLineNumber = Selection.ParagraphFormat.NoLineNumber
+
+                Dim SrcHyphenation
+                SrcHyphenation = Selection.ParagraphFormat.Hyphenation
+
+                Dim SrcFirstLineIndent
+                SrcFirstLineIndent = Selection.ParagraphFormat.FirstLineIndent
+
+                Dim SrcCharacterUnitLeftIndent
+                SrcCharacterUnitLeftIndent = Selection.ParagraphFormat.CharacterUnitLeftIndent
+
+                Dim SrcCharacterUnitRightIndent
+                SrcCharacterUnitRightIndent = Selection.ParagraphFormat.CharacterUnitRightIndent
+
+                Dim SrcCharacterUnitFirstLineIndent
+                SrcCharacterUnitFirstLineIndent = Selection.ParagraphFormat.CharacterUnitFirstLineIndent
+
+                Dim SrcLineUnitBefore
+                SrcLineUnitBefore = Selection.ParagraphFormat.LineUnitBefore
+
+                Dim SrcLineUnitAfter
+                SrcLineUnitAfter = Selection.ParagraphFormat.LineUnitAfter
+
+                Dim SrcMirrorIndents
+                SrcMirrorIndents = Selection.ParagraphFormat.MirrorIndents
+
+                Dim SrcTextboxTightWrap
+                SrcTextboxTightWrap = Selection.ParagraphFormat.TextboxTightWrap
+
+                Dim SrcAutoAdjustRightIndent
+                SrcAutoAdjustRightIndent = Selection.ParagraphFormat.AutoAdjustRightIndent
+
+                Dim SrcDisableLineHeightGrid
+                SrcDisableLineHeightGrid = Selection.ParagraphFormat.DisableLineHeightGrid
+
+                Dim SrcFarEastLineBreakControl
+                SrcFarEastLineBreakControl = Selection.ParagraphFormat.FarEastLineBreakControl
+
+                Dim SrcWordWrap
+                SrcWordWrap = Selection.ParagraphFormat.WordWrap
+
+                Dim SrcHangingPunctuation
+                SrcHangingPunctuation = Selection.ParagraphFormat.HangingPunctuation
+
+                Dim SrcHalfWidthPunctuationOnTopOfLine
+                SrcHalfWidthPunctuationOnTopOfLine = Selection.ParagraphFormat.HalfWidthPunctuationOnTopOfLine
+
+                Dim SrcAddSpaceBetweenFarEastAndAlpha
+                SrcAddSpaceBetweenFarEastAndAlpha = Selection.ParagraphFormat.AddSpaceBetweenFarEastAndAlpha
+
+                Dim SrcAddSpaceBetweenFarEastAndDigit
+                SrcAddSpaceBetweenFarEastAndDigit = Selection.ParagraphFormat.AddSpaceBetweenFarEastAndDigit
+
+                Dim SrcBaseLineAlignment
+                SrcBaseLineAlignment = Selection.ParagraphFormat.BaseLineAlignment
+
+            Selection.Copy
+
+            Documents(DesDoc).Activate
+
+            Selection.Paste
+
+            Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
+            Selection.MoveUp Unit:=wdParagraph, Count:=1, Extend:=wdExtend
+            Selection.Font = strFontFormat
+
+                Selection.ParagraphFormat.LeftIndent = SrcLeftIndent
+
+                Selection.ParagraphFormat.RightIndent = SrcRightIndent
+
+                Selection.ParagraphFormat.SpaceBefore = SrcSpaceBefore
+
+                Selection.ParagraphFormat.SpaceBeforeAuto = SrcSpaceBeforeAuto
+
+                Selection.ParagraphFormat.SpaceAfter = SrcSpaceAfter
+
+                Selection.ParagraphFormat.SpaceAfterAuto = SrcSpaceAfterAuto
+
+                Selection.ParagraphFormat.LineSpacingRule = SrcLineSpacingRule
+
+                Selection.ParagraphFormat.Alignment = SrcAlignment
+
+                Selection.ParagraphFormat.WidowControl = SrcWidowControl
+
+                Selection.ParagraphFormat.KeepWithNext = SrcKeepWithNext
+
+                Selection.ParagraphFormat.KeepTogether = SrcKeepTogether
+
+                Selection.ParagraphFormat.PageBreakBefore = SrcPageBreakBefore
+
+                Selection.ParagraphFormat.NoLineNumber = SrcNoLineNumber
+
+                Selection.ParagraphFormat.Hyphenation = SrcHyphenation
+
+                Selection.ParagraphFormat.FirstLineIndent = SrcFirstLineIndent
+
+                Selection.ParagraphFormat.CharacterUnitLeftIndent = SrcCharacterUnitLeftIndent
+
+                Selection.ParagraphFormat.CharacterUnitRightIndent = SrcCharacterUnitRightIndent
+
+                Selection.ParagraphFormat.CharacterUnitFirstLineIndent = SrcCharacterUnitFirstLineIndent
+
+                Selection.ParagraphFormat.LineUnitBefore = SrcLineUnitBefore
+
+                Selection.ParagraphFormat.LineUnitAfter = SrcLineUnitAfter
+
+                Selection.ParagraphFormat.MirrorIndents = SrcMirrorIndents
+
+                Selection.ParagraphFormat.TextboxTightWrap = SrcTextboxTightWrap
+
+                Selection.ParagraphFormat.AutoAdjustRightIndent = SrcAutoAdjustRightIndent
+
+                Selection.ParagraphFormat.DisableLineHeightGrid = SrcDisableLineHeightGrid
+
+                Selection.ParagraphFormat.FarEastLineBreakControl = SrcFarEastLineBreakControl
+
+                Selection.ParagraphFormat.WordWrap = SrcWordWrap
+
+                Selection.ParagraphFormat.HangingPunctuation = SrcHangingPunctuation
+
+                Selection.ParagraphFormat.HalfWidthPunctuationOnTopOfLine = SrcHalfWidthPunctuationOnTopOfLine
+
+                Selection.ParagraphFormat.AddSpaceBetweenFarEastAndAlpha = SrcAddSpaceBetweenFarEastAndAlpha
+
+                Selection.ParagraphFormat.AddSpaceBetweenFarEastAndDigit = SrcAddSpaceBetweenFarEastAndDigit
+
+                Selection.ParagraphFormat.BaseLineAlignment = SrcBaseLineAlignment
+
+        Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdMove
+        Selection.TypeParagraph
+
+        Documents(SrcDoc).Activate
+
+        Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdMove
+    End If
+    
+TryAgain:
+
+Next I
+
+Word.Application.WindowState = wdWindowStateMaximize
+Application.ScreenUpdating = True
+Documents(DesDoc).Activate
+
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+UhOhNT
+    
+End Sub

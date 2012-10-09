@@ -1,0 +1,14 @@
+Sub ClearShapesNT()
+'Version 1
+
+'tmoore82
+'8/29/12
+
+'About as simple as it gets. I really only have this because 
+'(a) it can be combined with other macros and (b) as far as
+'I can tell, Word doesn't have a shortcut for this.
+
+ActiveDocument.Shapes.SelectAll
+    Selection.Delete
+
+End Sub

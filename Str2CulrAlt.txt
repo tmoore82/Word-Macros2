@@ -1,0 +1,30 @@
+Public Sub Str2CurlAltNT()
+'Version 2
+
+'tmoore82
+'10/02/12
+
+'uses ASCII characters instead of changing Word's formatting options
+
+Application.ScreenUpdating = False
+
+
+FindThis = "^34(*)^34"
+ReplaceWithThis = Chr(147) & "\1" & Chr(148)
+
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+FindThis = "^39(*)^39"
+ReplaceWithThis = Chr(145) & "\1" & Chr(146)
+        
+Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+'FindThis = "(<*)^39(*>)"
+'ReplaceWithThis = "\1" & "^146" & "\2"
+'
+'Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+Selection.HomeKey Unit:=wdStory
+Application.ScreenUpdating = True
+
+End Sub

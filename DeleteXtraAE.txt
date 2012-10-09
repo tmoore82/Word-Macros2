@@ -1,0 +1,16 @@
+Public Sub DeleteXtraAENT()
+Application.ScreenUpdating = False
+
+'Time after time, in PDF-to-Word conversions, the AE
+'ligature shows up in place of an appostrophe. 
+'This finds and replaces all of them.
+'I've yet to come across a doc where I actually need 
+'to preserve the AE.
+
+FindThis = "Æ"
+ReplaceWithThis = "'"
+
+Call FindDefaultNT(FindThis, ReplaceWithThis)
+
+Application.ScreenUpdating = True
+End Sub

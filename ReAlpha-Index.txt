@@ -1,0 +1,657 @@
+Public Sub ReAlpha_NT()
+'Developer v4.0
+
+'9/20/12
+'tmoore82
+
+'See notes on ReAlpha.
+
+'On Error GoTo ErrMsg
+    
+    nBMNO = 1
+    
+    Set SrcDoc = ActiveDocument
+    
+    Documents.Add
+    Set DesDoc = ActiveDocument
+        
+    TableAdd_NT
+    
+    SrcDoc.Activate
+
+        Word.Application.WindowState = wdWindowStateMinimize
+        
+        ActiveWindow.View.ShowBookmarks = True
+        Application.ScreenUpdating = False
+        
+        Selection.HomeKey Unit:=wdStory
+        Selection.TypeText "temp "
+        Selection.HomeKey Unit:=wdLine
+        Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdExtend
+        Selection.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.TypeText "  "
+        
+        nBMNO = nBMNO + 1
+
+        H_it_NT
+        
+NotAlpha_Setup:
+        
+        'set up arrays for the text we need to find and repalce
+        'this way we write one find & replace loop for each group, not one per string
+        Dim strNotAlpha(5) As String
+        Dim strAlpha(3) As String
+        
+        strNotAlpha(0) = "J"
+        strNotAlpha(1) = "rn"
+        strNotAlpha(2) = "rri"
+        strNotAlpha(3) = "in"
+        strNotAlpha(4) = "ri"
+
+        strAlpha(0) = "l"
+        strAlpha(1) = "m"
+        strAlpha(2) = "n"
+        
+        Dim nCaseNo As Integer
+        nCaseNo = 0
+        
+WhichCase:
+        
+        If nCaseNo > 4 Then GoTo GetOut
+        
+        Select Case nCaseNo
+        
+            Case 0
+                strCaseNotAlpha = strNotAlpha(0)
+                strCaseAlpha = strAlpha(0)
+                
+            Case 1
+                strCaseNotAlpha = strNotAlpha(1)
+                strCaseAlpha = strAlpha(1)
+                
+            Case NT
+                strCaseNotAlpha = strNotAlpha(2)
+                strCaseAlpha = strAlpha(1)
+                
+            Case 3
+                strCaseNotAlpha = strNotAlpha(3)
+                strCaseAlpha = strAlpha(1)
+                
+            Case 4
+                strCaseNotAlpha = strNotAlpha(4)
+                strCaseAlpha = strAlpha(2)
+        
+        End Select
+        
+        Selection.HomeKey Unit:=wdStory
+
+FirstPosition:
+
+        FirstPosition_NT
+        SecondPosition_NT
+        ThirdPosition_NT
+        
+        nCaseNo = nCaseNo + 1
+        
+        GoTo WhichCase
+        
+GetOut:
+
+        c_ExclamFP_NT
+        c_ExclamSP_NT
+        c_ExclamTP_NT
+       
+AllDone:
+        
+    DesDoc.Activate
+    
+        Selection.Tables(1).Range.ParagraphFormat.SpaceAfter = 0
+        Selection.Tables(1).ApplyStyleColumnBands = False
+        Selection.Tables(1).ApplyStyleRowBands = True
+        Selection.Tables(1).Style = "Medium Shading 1 - Accent 1"
+        Selection.WholeStory
+        Selection.Copy
+    
+    Word.ActiveDocument.Close , False
+    
+    SrcDoc.Activate
+    
+        Selection.EndKey Unit:=wdStory
+        Selection.TypeParagraph
+        Selection.InsertBreak Type:=wdPageBreak
+        Selection.PasteAndFormat (wdFormatOriginalFormatting)
+        
+        Application.ScreenUpdating = True
+        Selection.HomeKey Unit:=wdStory
+        
+        CompletedNT
+        
+        MsgBox ("See table at the end of this document for index of changes")
+
+        Word.Application.WindowState = wdWindowStateMaximize
+
+        Exit Sub
+        
+ErrMsg:
+        
+        UhOhNT
+       
+End Sub
+Private Sub H_it_NT()
+        
+        'find H by itself. This is probably the word "it" misread by the OCR
+        'find the first instance, if any
+        Selection.Find.ClearFormatting
+        Selection.Find.Replacement.ClearFormatting
+        With Selection.Find
+            .Text = "<H>"
+            .Replacement.Text = ""
+            .Forward = True
+            .MatchWildcards = True
+            .Wrap = wdFindStop
+            .MatchCase = True
+        End With
+        
+        Do
+            'i take it into the loop so we can bookmark each instance as we go. This way they can be reviewed.
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "<H>"
+                    .Replacement.Text = "it"
+                    .MatchWildcards = True
+                    .MatchCase = True
+                End With
+                Selection.Find.Execute Replace:=wdReplaceOne
+        
+                'add the bookmark and deselect the text
+                SrcDoc.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                Selection.Range.HighlightColorIndex = wdYellow
+                Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    'NT Combination
+                Selection.TypeText "H = it"
+                Selection.MoveRight Unit:=wdCell    '3 FirstForm
+                Selection.TypeText "H"
+                Selection.MoveRight Unit:=wdCell    '4 Changed To
+                Selection.TypeText "it"
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+                
+                nBMNO = nBMNO + 1
+           
+        Loop
+End Sub
+Private Sub FirstPosition_NT()
+        Do
+        
+            With Selection.Find
+                .Text = strCaseNotAlpha
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1, Extend:=wdMove
+            Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdExtend
+                With Selection.Find
+                    .Text = "<" & strCaseNotAlpha & "([a-z]{1,}>)"
+                    .Replacement.Text = strCaseAlpha & "\1"
+                    .MatchWildcards = True
+                    .MatchCase = True
+                    .Wrap = wdFindStop
+                End With
+                Selection.Find.Execute
+                
+                ReAlphaIndex_NT
+                
+                nBMNO = nBMNO + 1
+           
+        Loop
+End Sub
+Private Sub SecondPosition_NT()
+        
+        Selection.HomeKey Unit:=wdStory
+        
+        Do
+            
+            With Selection.Find
+                .Text = strCaseNotAlpha
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1
+            Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdExtend
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "(<*)" & strCaseNotAlpha & "([a-z]{1,}>)"
+                    .Replacement.Text = "\1" & strCaseAlpha & "\2"
+                    .MatchWildcards = True
+                    .MatchCase = True
+                End With
+                Selection.Find.Execute
+                
+                ReAlphaIndex_NT
+
+        nBMNO = nBMNO + 1
+           
+        Loop
+
+End Sub
+Private Sub ThirdPosition_NT()
+ Selection.HomeKey Unit:=wdStory
+        
+        Do
+            With Selection.Find
+                .Text = strCaseNotAlpha
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1
+            Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdExtend
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "(<*)" & strCaseNotAlpha & ">"
+                    .Replacement.Text = "\1" & strCaseAlpha
+                    .MatchWildcards = True
+                    .MatchCase = True
+                End With
+                Selection.Find.Execute
+                
+                ReAlphaIndex_NT
+                
+                nBMNO = nBMNO + 1
+           
+        Loop
+        
+End Sub
+Private Sub c_ExclamFP_NT()
+
+c_Exclam1:
+
+        Selection.HomeKey Unit:=wdStory
+        
+        Do
+            With Selection.Find
+                .Text = "c\!"
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1
+            Selection.MoveRight Unit:=wdWord, Count:=3, Extend:=wdExtend
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "<" & "c\!" & "([a-z]{1,}>)"
+                    .Replacement.Text = "d" & "\1"
+                    .MatchWildcards = True
+                    .MatchCase = True
+                End With
+                Selection.Find.Execute
+                
+                If Selection.Find.Found = False Then
+                    Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdMove
+                    GoTo CountUp4
+                Else
+                End If
+                
+                If CheckSpelling(Selection.Text) = False Then
+                    Selection.Find.Execute Replace:=wdReplaceOne
+                Else
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    GoTo CountUp4
+                End If
+                
+                CheckWord = Selection.Text
+        
+                If CheckSpelling(CheckWord) = True Then
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText "c! = d"
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+                
+    SrcDoc.Activate
+    
+                Else
+                    Selection.TypeText Text:=FirstForm
+                    Selection.MoveLeft Unit:=wdWord, Count:=1, Extend:=wdExtend
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText "c! = d"
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+    
+                End If
+        
+CountUp4:
+                nBMNO = nBMNO + 1
+           
+        Loop
+End Sub
+Private Sub c_ExclamSP_NT()
+
+c_ExclamNT:
+
+        Selection.HomeKey Unit:=wdStory
+        
+        Do
+            With Selection.Find
+                .Text = "c\!"
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1
+            Selection.MoveRight Unit:=wdWord, Count:=3, Extend:=wdExtend
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "(<*)" & "c\!" & "([a-z]{1,}>)"
+                    .Replacement.Text = "\1" & "d" & "\NT"
+                    .MatchWildcards = True
+                    .MatchCase = True
+                End With
+                    Selection.Find.Execute
+                
+                If Selection.Find.Found = False Then
+                    Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdMove
+                    GoTo CountUp5
+                Else
+                End If
+                
+                If CheckSpelling(Selection.Text) = False Then
+                    Selection.Find.Execute Replace:=wdReplaceOne
+                Else
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    GoTo CountUp5
+                End If
+                CheckWord = Selection.Text
+        
+                If CheckSpelling(CheckWord) = True Then
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText "c! = d"
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+                
+    SrcDoc.Activate
+    
+                Else
+                    Selection.TypeText Text:=FirstForm
+                    Selection.MoveLeft Unit:=wdWord, Count:=1, Extend:=wdExtend
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText "c! = d"
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+    
+                End If
+        
+CountUp5:
+                nBMNO = nBMNO + 1
+           
+        Loop
+End Sub
+Private Sub c_ExclamTP_NT()
+
+c_Exclam3:
+
+        Selection.HomeKey Unit:=wdStory
+
+        Do
+            With Selection.Find
+                .Text = "c\!"
+                .Replacement.Text = ""
+                .Forward = True
+                .MatchWildcards = True
+                .Wrap = wdFindStop
+            End With
+            
+            Selection.Find.Execute
+            If Selection.Find.Found = False Then Exit Sub
+            Selection.MoveLeft Unit:=wdWord, Count:=1
+            Selection.MoveRight Unit:=wdWord, Count:=NT, Extend:=wdExtend
+                FirstForm = Selection.Text
+                With Selection.Find
+                    .Text = "c!"
+                    .Replacement.Text = "d"
+                    .MatchWildcards = False
+                    .MatchCase = True
+                End With
+                    Selection.Find.Execute Replace:=wdReplaceOne
+                 
+                If Selection.Find.Found = False Then
+                    Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdMove
+                    GoTo CountUp6
+                Else
+                End If
+                
+                CheckWord = Selection.Text
+        
+                ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                Selection.Range.HighlightColorIndex = wdYellow
+                Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText "c! = d"
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText "c! -> " & CheckWord
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+        
+CountUp6:
+                nBMNO = nBMNO + 1
+           
+        Loop
+        
+        End Sub
+Private Sub TableAdd_NT() 'ReAlpha
+
+        Dim myRange As Range
+        Set myRange = ActiveDocument.Range(Start:=0, End:=0)
+        
+        Dim oTbl
+        Set oTbl = ActiveDocument.Tables.Add(Range:=myRange, NumRows:=10, NumColumns:=6)
+         
+         With oTbl
+            .Borders(wdBorderTop).LineStyle = wdLineStyleSingle
+            .Borders(wdBorderLeft).LineStyle = wdLineStyleSingle
+            .Borders(wdBorderBottom).LineStyle = wdLineStyleSingle
+            .Borders(wdBorderRight).LineStyle = wdLineStyleSingle
+            .Borders(wdBorderHorizontal).LineStyle = wdLineStyleSingle
+            .Borders(wdBorderVertical).LineStyle = wdLineStyleSingle
+          End With
+            
+        ActiveDocument.Tables(1).Cell(Row:=1, Column:=1).Range.Select
+        Selection.Collapse
+        
+        Selection.TypeText "BookmarkID"
+        Selection.MoveRight Unit:=wdCell
+        Selection.TypeText "Problem Scans"
+        Selection.MoveRight Unit:=wdCell
+        Selection.TypeText "Original"
+        Selection.MoveRight Unit:=wdCell
+        Selection.TypeText "Changed To"
+        Selection.MoveRight Unit:=wdCell
+        Selection.TypeText "Alternate 1"
+        Selection.MoveRight Unit:=wdCell
+        Selection.TypeText "Alternate 2"
+        Selection.MoveRight Unit:=wdCell
+        
+End Sub
+Private Sub ReAlphaIndex_NT() 'strCaseNotAlpha As String, strCaseAlpha As String, nBMNO As Integer, FirstForm As String
+
+                If Selection.Words.Count > 1 Then
+                    Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    
+DesDoc.Activate
+
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText strCaseNotAlpha & " = " & strCaseAlpha
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText "Couldn't change"
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+
+SrcDoc.Activate
+                   
+                    Exit Sub 'GoTo CountUp
+              
+                End If
+                
+                If Selection.Find.Found = False Then
+                    Selection.MoveRight Unit:=wdWord, Count:=1, Extend:=wdMove
+                    Exit Sub 'GoTo CountUp
+                Else
+                End If
+                
+                FirstForm = Selection.Text
+                If CheckSpelling(Selection.Text) = False Then
+                    Selection.Find.Execute Replace:=wdReplaceOne
+                Else
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+                    Exit Sub 'GoTo CountUp
+                End If
+                
+                CheckWord = Selection.Text
+        
+                If CheckSpelling(CheckWord) = True Then
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText strCaseNotAlpha & " = " & strCaseAlpha
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+    
+                Else
+                    Selection.TypeText Text:=FirstForm
+                    ActiveDocument.Bookmarks.Add Name:="rep" & nBMNO, Range:=Selection.Range
+                    Selection.Range.HighlightColorIndex = wdYellow
+                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+    
+    DesDoc.Activate
+    
+                Selection.TypeText "rep" & nBMNO    '1 Bookmark ID
+                Selection.MoveRight Unit:=wdCell    '2 Combo
+                Selection.TypeText strCaseNotAlpha & " = " & strCaseAlpha
+                Selection.MoveRight Unit:=wdCell    '3 firstform
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '4 changed to
+                Selection.TypeText FirstForm
+                Selection.MoveRight Unit:=wdCell    '5 Alternate 1
+                Selection.TypeText CheckWord
+                Selection.MoveRight Unit:=wdCell    '6 Alternate 2
+                Selection.MoveRight Unit:=wdCell    '1 Bookmark ID
+                
+    SrcDoc.Activate
+    
+                End If
+                
+End Sub

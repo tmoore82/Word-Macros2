@@ -1,0 +1,103 @@
+Public Sub TwoAfterPNT()
+'Version 3
+
+'tmoore82
+'9/28/12
+
+'Some clients require/prefer two spaces after each sentence.
+'The challenge is not adding them where they don't belong.
+'This macro is combined with DeleteXtraSpace to make sure that
+'(a) no superfluous space is in the doc, and (b) that two 
+'spaces aren't added after common abbreviations and other 
+'uses of the period. It doesn't catch everything, but it's 
+'getting there.
+
+'On Error GoTo ErrMsg
+
+Application.ScreenUpdating = False
+
+n = 1
+
+WhichCase:
+
+Select Case n
+
+    Case 1
+    
+        FindThis = "(?>)(. )(<?)"
+        ReplaceWithThis = "\1.  \3"
+        
+    Case 2
+    
+        FindThis = "(?>)\! (<?)"
+        ReplaceWithThis = "\1" & Chr(33) & "  \2"
+    
+    Case 3
+    
+        FindThis = "(?>)\? (<?)"
+        ReplaceWithThis = "\1" & Chr(63) & "  \2"
+        
+    Case 4
+    
+        FindThis = "(?>)(.)" & Chr(148) & " (<?)"
+        ReplaceWithThis = "\1." & Chr(148) & "  \3"
+        
+    Case 5
+    
+        FindThis = "(?>)\!" & Chr(148) & " (<?)"
+        ReplaceWithThis = "\1" & Chr(33) & Chr(148) & "  \2"
+        
+    Case 6
+    
+        FindThis = "(?>)\?" & Chr(148) & " (<?)"
+        ReplaceWithThis = "\1" & Chr(63) & Chr(148) & "  \2"
+    
+    Case 7
+    
+        FindThis = "([CDIJMNOPRS][cdnoprstv]{1,3})(.  )(<?)"
+        ReplaceWithThis = "\1. \3"
+    
+    Case 8
+    
+        FindThis = "e.g.  "
+        ReplaceWithThis = "e.g. "
+    
+    Case 9
+    
+        FindThis = "a.m.  ([a-z])"
+        ReplaceWithThis = "a.m. \1"
+    
+    Case 10
+    
+        FindThis = "p.m.  ([a-z])"
+        ReplaceWithThis = "p.m. \1"
+    
+    Case 11
+    
+        FindThis = "etc.  ([a-z])"
+        ReplaceWithThis = "etc. \1"
+    
+    Case Else
+        
+        GoTo GetOut
+
+End Select
+
+    Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+    
+    n = n + 1
+
+GoTo WhichCase
+
+GetOut:
+
+Application.ScreenUpdating = False
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub

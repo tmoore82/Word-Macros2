@@ -1,0 +1,44 @@
+Sub TOA_Repeat_NT()
+'Version 1
+
+'tmoore82
+'9/25/12
+
+'Primarily for those in the legal field. 
+
+'TOA_Repeat allows you, once you've added a long cite of an authority,
+'to search for and add all the short cites in a document. 
+
+Dim strFindThis
+strFindThis = InputBox("What is the text you are looking for?" & vbNewLine & vbNewLine & "This is case sensitive.")
+
+Dim strShortCite
+strShortCite = InputBox("What is the short cite?")
+
+
+ Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = strFindThis
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .Format = False
+        .MatchCase = True
+    End With
+
+Do
+    Selection.Find.Execute
+    
+    If Selection.Find.Found = False Then Exit Sub
+    
+    Selection.MoveLeft Unit:=wdCharacter, Count:=1
+    Selection.MoveRight Unit:=wdCharacter, Count:=1
+    ActiveWindow.ActivePane.View.ShowAll = True
+    ActiveDocument.TablesOfAuthorities.MarkCitation Range:=Selection.Range, _
+        ShortCitation:=strShortCite, LongCitation:="", LongCitationAutoText:="", _
+        Category:=1
+        
+Loop
+
+End Sub

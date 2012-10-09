@@ -1,0 +1,252 @@
+Public Sub FootieNT()
+'Version 5
+'Beta Release v1.0
+'tmoore82
+'10/02/12 (undated until now)
+
+'Simplifies adding page numbers when a document has numerous sections.
+
+'This was one of my first big learning projects, so there's probably
+'a lot of spaghetti here. But it works great!
+
+On Error GoTo ErrMsg:
+
+'go to the main document (in case in the footer)
+ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+
+'save current view type (so we can return the user to it later
+Dim pView
+pView = ActiveWindow.View.Type
+
+'check to see if the current window is in Print View. If not, change it. If so, save the zoom settings.
+If ActiveWindow.View.Type <> wdPrintView Then
+    ActiveWindow.View.Type = wdPrintView
+Else
+    Dim uView
+    uView = ActiveDocument.ActiveWindow.View.Zoom.Percentage
+End If
+
+'zoom to full page
+ActiveWindow.ActivePane.View.Zoom.PageFit = wdPageFitFullPage
+
+'delete all current headerfooters
+    ClearHeadFoot_NT
+
+'place the cursor at the beginning of the document
+Selection.HomeKey Unit:=wdStory
+
+'If MsgBox("Page Number on First Page?", vbYesNo) = vbYes Then
+'
+'Else
+'End If
+
+If MsgBox("Do you have a TOC/TOA?", vbYesNo) = vbYes Then
+
+'turn off link to previous
+NoSameAsPrevious_NT
+
+
+    Dim tocsec As Integer
+    tocsec = InputBox("What Section is your TOC in?", "TOC Section")
+    
+    'go to section containing toc
+    Selection.GoTo What:=wdGoToSection, Which:=wdGoToAbsolute, Count:=tocsec
+    
+    
+    'Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdMove
+    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+    
+    'go into the footer
+    ActiveDocument.ActiveWindow.View.SeekView = wdSeekCurrentPageFooter
+    
+    'center text
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+
+    'insert a field
+            'Selection.Fields.Add is the command to add the field
+            'Range tells VBA where to put the field, in this case at the current cursor location
+            'Type and wdFieldEmpty tells VBA not to use a specific field type
+            'preserve formatting tells VBA whether or not to preserve the field formatting when updates are made. it defaults to false, and i'm not sure why
+        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+            PreserveFormatting:=False
+    
+        'text to insert in the field, which Word will then know how to interpret
+        Selection.TypeText Text:="PAGE \*MERGEFORMAT"
+        
+        'Call the Number Formatting dialog box
+        Dialogs(wdDialogFormatPageNumber).Show
+        
+        'update the field (prevents need to select all and press F9 later)
+        Selection.Fields.Update
+    
+        'go to the end of the line or selection
+        Selection.EndKey Unit:=wdLine
+    
+    'insert paragraph
+    Selection.TypeParagraph
+    
+    'align text left
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
+    
+    'return to the main document
+    ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+    
+    Dim bodsec As Integer
+    bodsec = InputBox("What section contains the main body of your document?", "Main Body Section")
+    
+    'go to section 3
+    Selection.GoTo What:=wdGoToSection, Which:=wdGoToAbsolute, Count:=bodsec
+    
+    'go into the footer
+    ActiveDocument.ActiveWindow.View.SeekView = wdSeekCurrentPageFooter
+    
+    'center text
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+    
+    'insert a field
+        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+            PreserveFormatting:=False
+    
+        'text to insert in the field, which Word will then know how to interpret
+        Selection.TypeText Text:="PAGE \*MERGEFORMAT "
+        
+        'Call the Number Formatting dialog box
+        Dialogs(wdDialogFormatPageNumber).Show
+        
+        'update the field (prevents need to select all and press F9 later)
+        Selection.Fields.Update
+    
+        'go to the end of the line or selection
+        Selection.EndKey Unit:=wdLine
+    
+    Selection.TypeParagraph
+    
+    'align text left
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
+
+Else
+    
+
+    'go into the footer and set style defaults
+    ActiveDocument.ActiveWindow.View.SeekView = wdSeekCurrentPageFooter
+    
+    'center text
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+
+    'insert a field
+        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+            PreserveFormatting:=False
+    
+        'text to insert in the field, which Word will then know how to interpret
+        Selection.TypeText Text:="PAGE \*MERGEFORMAT "
+        
+        'Call the Number Formatting dialog box
+        Dialogs(wdDialogFormatPageNumber).Show
+        
+        Selection.EndKey Unit:=wdLine, Extend:=wdExtend
+
+        With Selection.HeaderFooter.PageNumbers
+            .NumberStyle = wdPageNumberStyleArabic
+            .HeadingLevelForChapter = 0
+            .IncludeChapterNumber = False
+            .ChapterPageSeparator = wdSeparatorHyphen
+            .RestartNumberingAtSection = False
+            .StartingNumber = 0
+        End With
+               
+        'update the field (prevents need to select all and press F9 later)
+        Selection.Fields.Update
+    
+        'go to the end of the line or selection
+        Selection.EndKey Unit:=wdLine
+    
+    'insert paragraph
+    Selection.TypeParagraph
+    
+    'align text left
+    Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
+    
+    'return to the main document
+    ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+    
+
+End If
+
+If MsgBox("Do you have additional sections that require page numbers?", vbYesNo) = vbYes Then
+
+    'declare a new variable that gives us a starting point to run a loop
+    Dim rerun As Integer
+    If bodsec <> 0 Then
+        rerun = bodsec
+    Else
+        rerun = 1
+    End If
+        Selection.GoTo What:=wdGoToSection, Which:=wdGoToAbsolute, Count:=rerun
+
+   Do Until rerun = ActiveDocument.Sections.Count
+
+       Selection.GoTo What:=wdGoToSection, Which:=wdGoToNext, Count:=1
+    
+       If MsgBox("Insert page numbers in this section?", vbYesNo) = vbYes Then
+           'go into the footer
+            ActiveDocument.ActiveWindow.View.SeekView = wdSeekCurrentPageFooter
+    
+            'center text
+            Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+    
+            'insert a field
+                Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+                    PreserveFormatting:=False
+    
+                'text to insert in the field, which Word will then know how to interpret
+                Selection.TypeText Text:="PAGE \*MERGEFORMAT "
+    
+               'Call the Number Formatting dialog box
+                Dialogs(wdDialogFormatPageNumber).Show
+    
+                'update the field (prevents need to select all and press F9 later)
+                Selection.Fields.Update
+    
+                'go to the end of the line or selection
+                Selection.EndKey Unit:=wdLine
+    
+              Selection.TypeParagraph
+    
+            'align text left
+            Selection.ParagraphFormat.Alignment = wdAlignParagraphLeft
+    
+            'return to the main document
+            ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+            
+            rerun = rerun + 1
+            
+            Else
+            
+            rerun = rerun + 1
+            
+            End If
+            
+    Loop
+Else
+End If
+
+
+
+InsertDocNoInFooters
+
+
+'return to the main document
+ActiveWindow.ActivePane.View.SeekView = wdSeekMainDocument
+
+'place the cursor at the beginning of the document
+Selection.HomeKey Unit:=wdStory
+
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

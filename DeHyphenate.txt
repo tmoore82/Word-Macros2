@@ -1,0 +1,78 @@
+Public Sub DeHyphenateNT()
+'Version 1
+
+'tmoore82
+'10/02/12 (undated until now)
+
+'This is for PDF-to-Word conversions.
+'If in the PDF lines were allowed to break within words,
+'cleaning up the hyphens is time conusming. However,
+'you don't necessarily want to take out every hyphen,
+'as some of them are appropriate.
+
+'Dehyphenate finds words with hyphens in them,
+'removes the hyphen, checks the result against the spelling
+'dictionary, and keeps it if it finds a match.
+
+'Right now, this can also remove hyphens from unwanted combos
+'like 0-60, or T-HE. Careful proofreading is still top priority.
+
+On Error GoTo ErrMsg
+
+Application.ScreenUpdating = False
+
+Selection.HomeKey Unit:=wdStory
+
+Selection.Find.ClearFormatting
+Selection.Find.Replacement.ClearFormatting
+With Selection.Find
+    .Text = "(<*)\-(*>)"
+    .Forward = True
+    .MatchWildcards = True
+    .Wrap = wdFindStop
+End With
+
+Do
+    
+    Selection.Find.Execute
+    If Selection.Find.Found = False Then GoTo GetOut
+    
+        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Selection.MoveLeft Unit:=wdWord, Count:=3, Extend:=wdExtend
+        'MsgBox ("I found one")
+        FirstForm = Selection.Text
+        'MsgBox (FirstForm)
+        With Selection.Find
+            .Text = "(<*)\-(*>)"
+            .Replacement.Text = "\1\2"
+            .MatchWildcards = True
+        End With
+        Selection.Find.Execute Replace:=wdReplaceOne
+        'MsgBox (Selection.Text)
+        CheckWord = Selection.Text
+        'MsgBox (CheckWord)
+
+        If CheckSpelling(CheckWord) = True Then
+            'MsgBox ("It's in the dictionary.")
+            Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        Else
+            'MsgBox ("It's not in the dictionary.")
+            Selection.TypeText Text:=FirstForm
+            Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+        End If
+   
+Loop
+
+GetOut:
+
+    Application.ScreenUpdating = True
+
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

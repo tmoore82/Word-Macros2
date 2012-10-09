@@ -1,0 +1,218 @@
+Public Sub HardSpace_NT()
+'Version 2
+
+'tmoore82
+'09/28/12
+
+'There are a lot of places a document needs a 
+'non-breaking space, such as after (a)[hard space]this item, 
+'(b)[hard space]that item, etc. This macro 
+'tries to catch the most common ones.
+
+'This isn't completely functional yet. It catches a lot, but
+'not everything.
+
+'On Error GoTo ErrMsg
+
+Application.ScreenUpdating = False
+
+n = 1
+
+WhichCase:
+
+Select Case n
+
+    Case 1
+    
+        FindThis = " \(([a-z])\) ([a-z])"
+        ReplaceWithThis = " " & Chr(40) & "\1" & Chr(41) & Chr(160) & "\2"
+        
+    Case 2
+    
+        FindThis = " \(([a-z])\) ([A-Z])"
+        ReplaceWithThis = " " & Chr(40) & "\1" & Chr(41) & Chr(160) & "\2"
+    
+    Case 3
+    
+        FindThis = " \(([0-9])\) ([a-z])"
+        ReplaceWithThis = " " & Chr(40) & "\1" & Chr(41) & Chr(160) & "\2"
+        
+    Case 4
+    
+        FindThis = " \(([0-9])\) ([A-Z])"
+        ReplaceWithThis = " " & Chr(40) & "\1" & Chr(41) & Chr(160) & "\2"
+        
+    Case 5
+    
+        FindThis = Chr(160) & "\(([0-9])\) days"
+        ReplaceWithThis = " \1" & Chr(160) & "days"
+    
+    Case 6
+    
+        FindThis = Chr(160) & "\(([0-9])\) weeks"
+        ReplaceWithThis = " \1" & Chr(160) & "weeks"
+        
+    Case 7
+    
+        FindThis = Chr(160) & "\(([0-9])\) months"
+        ReplaceWithThis = " \1" & Chr(160) & "months"
+        
+    Case 8
+    
+        FindThis = Chr(160) & "\(([0-9])\) years"
+        ReplaceWithThis = " \1" & Chr(160) & "years"
+    
+    
+    Case 9
+    
+        FindThis = Chr(160) & "\(([0-9])\) day"
+        ReplaceWithThis = " \1" & Chr(160) & "day"
+    
+    Case 10
+    
+        FindThis = Chr(160) & "\(([0-9])\) week"
+        ReplaceWithThis = " \1" & Chr(160) & "week"
+        
+    Case 11
+    
+        FindThis = Chr(160) & "\(([0-9])\) month"
+        ReplaceWithThis = " \1" & Chr(160) & "month"
+        
+    Case 12
+    
+        FindThis = Chr(160) & "\(([0-9])\) year"
+        ReplaceWithThis = " \1" & Chr(160) & "year"
+        
+    Case 13
+    
+        HardSpaceLromNT
+    
+    Case Else
+        
+        GoTo GetOut
+
+End Select
+
+    Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+
+    
+    n = n + 1
+
+GoTo WhichCase
+
+GetOut:
+
+Application.ScreenUpdating = False
+
+Exit Sub
+
+ErrMsg:
+
+    UhOhNT
+
+End Sub
+Private Sub HardSpaceLromNT()
+'Version 1
+
+'tmoore82
+'9/28/12
+
+
+'On Error GoTo ErrMsg
+
+Application.ScreenUpdating = False
+
+LowRomSearchArray = Array(" \(i\) ", " \(ii\) ", " \(iii\) ", " \(iv\) ", " \(v\) ", " \(vi\) ", " \(vii\) ", " \(viii\) ", " \(ix\) ", " \(x\) ", _
+        " \(xi\) ", " \(xii\) ", " \(xiii\) ", " \(xiv\) ", " \(xv\) ", " \(xvi\) ", " \(xvii\) ", " \(xviii\) ", " \(xix\) ", " \(xx\) ", _
+        " \(xxi\) ", " \(xxii\) ", " \(xxiii\) ", " \(xxiv\) ", " \(xxv\) ", " \(xxvi\) ")
+        
+Dim nLowRom As Integer
+        
+Dim n As Integer
+n = 1
+
+Select Case n
+
+    Case 1
+        
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = " (" & LowRomSearchArray(nLowRom) & ")" & " ([A-Z])"
+            ReplaceWithThis = "\1" & Chr(160) & "\2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+    Case 2
+    
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = "Section (" & LowRomSearchArray(nLowRom) & ")" & Chr(160) & "([A-Z])"
+            ReplaceWithThis = "Section \1 \2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+    Case 3
+        
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = " (" & LowRomSearchArray(nLowRom) & ")" & " ([a-z])"
+            ReplaceWithThis = "\1" & Chr(160) & "\2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+    Case 4
+    
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = "Section (" & LowRomSearchArray(nLowRom) & ")" & Chr(160) & "([a-z])"
+            ReplaceWithThis = "Section \1 \2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+    Case 5
+    
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = "Clause (" & LowRomSearchArray(nLowRom) & ")" & Chr(160) & "([A-Z])"
+            ReplaceWithThis = "Section \1 \2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+    Case 6
+    
+        For nLowRom = LBound(LowRomSearchArray) To UBound(LowRomSearchArray)
+        
+            FindThis = "Clause (" & LowRomSearchArray(nLowRom) & ")" & Chr(160) & "([a-z])"
+            ReplaceWithThis = "Section \1 \2"
+        
+            Call FindWithWildCardsNT(FindThis, ReplaceWithThis)
+            
+        Next nLowRom
+        
+     Case Else
+     
+        GoTo GetOut
+
+End Select
+        
+GetOut:
+
+Application.ScreenUpdating = True
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

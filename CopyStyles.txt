@@ -1,0 +1,81 @@
+Public Sub CopyStyles_NT()
+'Version 3
+
+'tmoore82
+'10/03/12
+
+'This macro will copy all paragraph styles from a source template
+'The destination document must be stored locally
+
+'Yes, Word has a native way of doing this. I developed the macro 
+'because I was copying styles from the same template over and over 
+'again, and this made one step out of six.  
+
+On Error GoTo ErrMsg
+
+'   Set the DesDoc as the Active Document.
+'   We need to do this to get the path and filename
+Set DesDoc = ActiveDocument
+
+
+'   get the path and filename of the destination document
+'   store it as a string
+Dim strDesDoc As String
+strDesDoc = ActiveDocument.FullName
+
+MsgBox ("Select the document you want to copy styles from")
+
+SelectFiles_NT
+
+'   store the source template path and filename as a string
+Dim strSrcDoc As String
+strSrcDoc = strPickedFile
+
+
+'   open the source template
+Documents.Open strSrcDoc
+
+
+'   designate a variable for the source template
+Set SrcDoc = ActiveDocument
+
+
+'   declare an integer for counting
+Dim n As Integer
+
+
+'   we count through the styles because there is no other way
+'   to loop through the styles by name
+'   this refers to a style by number, then retrieves the name
+For n = 1 To SrcDoc.Styles.Count
+
+    If SrcDoc.Styles(n).Type = wdStyleTypeParagraph Then
+    
+        Dim styOrear As String
+        '   retrieve the name of the style
+        stySrc = SrcDoc.Styles(n).NameLocal
+        
+        On Error Resume Next
+        Application.OrganizerCopy Source:=strSrcDoc, Destination:=strDesDoc, _
+        Name:=stySrc, Object:=wdOrganizerObjectStyles
+    
+    End If
+
+BackIn:
+
+Next n
+
+'close the template
+SrcDoc.Close
+
+
+'send a message of completion
+CompletedNT
+
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+
+End Sub

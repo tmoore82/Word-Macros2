@@ -1,0 +1,36 @@
+'10/09/12
+
+'It's so much easier to keep all my repeat variables in one place
+
+'Variables in consistant usage
+Public SrcDoc As Document 'Document working from
+Public DesDoc As Document 'Document copying to
+
+Public n As Integer 'for everything
+Public nBMNO As Integer 'for numbering(naming) bookmarks
+Public nColumn As Integer 'Column number
+Public nRow As Integer
+
+Public DesFold As String
+Public FindThis As String
+Public FreshFile As String
+Public ReplaceWithThis As String
+Public FirstForm As String 'to store a word before editing
+Public CheckWord As String 'to store a word after editing
+Public strCaseAlpha As String 'abstract variable for F&R
+Public strCaseNotAlpha As String 'abstract variable for F&R
+Public strDMM As String
+Public strFullName As String
+Public strName As String
+Public strNewName As String
+Public stropen As String
+Public strParseMe As String
+Public strPassword As String
+Public strPickedFile As String
+
+Public r As Range
+
+Public strDatesArray() As Variant
+Public date_element As Variant
+
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)

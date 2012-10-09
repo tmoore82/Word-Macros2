@@ -1,0 +1,56 @@
+Public Sub CleanAlotNT()
+'Version 7
+
+'tmoore82
+'10/03/12
+
+'Cleans an entire document based on firm standards. 
+'Formatting and anything that isn't text won't be preserved,
+'but you have the benefit of starting with a doc with no 
+'underlying formatting errors or inconsistencies.
+
+'On Error GoTo ErrMsg
+
+    Set SrcDoc = ActiveDocument
+        
+    'Alert to tell operator that certain content won't be copied (tables, graphics, etc.)
+    LossAlertNT
+    
+    'preemptively converts all numbering to text
+    Num2TextNT
+    
+    'select all but last pilcrow and copy
+    Selection.HomeKey Unit:=wdStory
+    Selection.WholeStory
+    Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+    Selection.Copy
+    
+    'add a destination document
+    Set DesDoc = Documents.Add
+    
+    'paste text only
+    Selection.PasteSpecial DataType:=wdPasteText
+    
+    'change style to "Body Text"
+    Selection.WholeStory
+    Selection.Style = ActiveDocument.Styles("Body Text")
+    
+    'run cleanup macros
+    DeleteXtraAENT
+    DeleteXtraSpaceNT
+    DeleteXtraTabNT
+    DeleteXtraParaNT
+    Str2CurlAltNT
+    TwoAfterPNT
+    HardSpace_NT
+
+    'alert the user that the macro is complete
+    CompletedNT
+    
+Exit Sub
+
+ErrMsg:
+
+UhOhNT
+    
+End Sub
