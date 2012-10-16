@@ -1,587 +1,119 @@
-Public Sub SubSeqGoNT()
-'version 7
-'Beta Release v1.0
+Public Sub SubSeqNT()
+'version 8
+
 'tmoore82
-'10/02/12
+'10/16/12 
+
+'**NOT TESTED YET** I finally got motivated to strip 
+'this down, but I haven't actually tested it. In theory,
+'this should work just as well as the previous, fragmented
+'version. The arrays have been moved to the Array module.
 
 'multiple parts
-'This was one of my early learning tests. I'm sure
-'there's a cleaner way. But this is fully functional.
 
 'This replaces numbered clauses or items within a paragraph
 'with sequence fields that will update when items are
 'added or deleted.
 
-'It works on one paragraph at a time
+'On Error GoTo ErrMsg
 
 Application.ScreenUpdating = False
 
 If ActiveWindow.View.ShowFieldCodes = True Then
         ActiveWindow.View.ShowFieldCodes = False
-    Else
-    End If
-
-SubSeqLromP1NT
-
-End Sub
-Private Sub SubSeqLromP1NT()
-
-'On Error GoTo ErrMsg
+End If
 
 Application.ScreenUpdating = False
 
-    Dim iSeqNum
-
-    Dim LowRomSearchArray() As Variant
-    LowRomSearchArray = Array(" \(i\) ", " \(ii\) ", " \(iii\) ", " \(iv\) ", " \(v\) ", " \(vi\) ", " \(vii\) ", " \(viii\) ", " \(ix\) ", " \(x\) ", _
-        " \(xi\) ", " \(xii\) ", " \(xiii\) ", " \(xiv\) ", " \(xv\) ", " \(xvi\) ", " \(xvii\) ", " \(xviii\) ", " \(xix\) ", " \(xx\) ", _
-        " \(xxi\) ", " \(xxii\) ", " \(xxiii\) ", " \(xxiv\) ", " \(xxv\) ", " \(xxvi\) ")
-
-    Selection.Paragraphs(1).Range.Characters(1).Select
-    Selection.Collapse wdCollapseStart
-    Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-
-    With Selection.Find
-        .Text = LowRomSearchArray(1)
-        .Forward = True
-        .Wrap = wdFindStop
-        .Format = True
-        .MatchCase = True
-        .MatchWholeWord = True
-        .MatchWildcards = True
-    End With
-
-    Selection.Find.Execute
-
-            Dim iLowRomLB
-            iLowRomLB = 0
-
-            If Selection.Find.Found = True Then
-
-                Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                Selection.Paragraphs(1).Range.Characters(1).Select
-                Selection.Collapse wdCollapseStart
-                Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-                Selection.Find.ClearFormatting
-                Selection.Find.Replacement.ClearFormatting
-
-                      With Selection.Find
-                          .Text = LowRomSearchArray(iLowRomLB)
-                          .Forward = False
-                          .Wrap = wdFindStop
-                          .Format = False
-                          .MatchCase = True
-                          .MatchWholeWord = True
-                          .MatchWildcards = True
-                      End With
-
-                    Selection.Find.Execute
-
-                        iSeqNum = "seq " & "here" & _
-                            ActiveDocument.Range(Selection.Range.Start, Selection.Range.End) _
-                            .Paragraphs.Count & "Lrom " & "\*roman"
-
-                        Selection.TypeText Text:=" ("
-
-                        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                            PreserveFormatting:=False
-
-                        Selection.TypeText Text:=iSeqNum
-
-                        Selection.Fields.Update
-
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-                        Selection.TypeText Text:=") "
-
-                        SubSeqLromP2NT
-
-            Else
-                        SubSeqUROMP1NT
-
-            End If
-            Exit Sub
-ErrMsg:
-
-   UhOhNT
-
-End Sub
-Private Sub SubSeqLromP2NT()
-
-On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-
- Dim iSeqNum
-
-    Dim LowRomSearchArray() As Variant
-    LowRomSearchArray = Array(" \(i\) ", " \(ii\) ", " \(iii\) ", " \(iv\) ", " \(v\) ", " \(vi\) ", " \(vii\) ", " \(viii\) ", " \(ix\) ", " \(x\) ", _
-        " \(xi\) ", " \(xii\) ", " \(xiii\) ", " \(xiv\) ", " \(xv\) ", " \(xvi\) ", " \(xvii\) ", " \(xviii\) ", " \(xix\) ", " \(xx\) ", _
-        " \(xxi\) ", " \(xxii\) ", " \(xxiii\) ", " \(xxiv\) ", " \(xxv\) ", " \(xxvi\) ")
-
-    Dim iLowRomLB
-    iLowRomLB = 1
-
-            Do
-
-                Selection.Paragraphs(1).Range.Characters(1).Select
-                Selection.Collapse wdCollapseStart
-                Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-                Selection.Find.ClearFormatting
-                Selection.Find.Replacement.ClearFormatting
-
-                    With Selection.Find
-                          .Text = LowRomSearchArray(iLowRomLB)
-                          .Forward = True
-                          .Wrap = wdFindStop
-                          .Format = False
-                          .MatchCase = True
-                          .MatchWholeWord = True
-                          .MatchByte = False
-                          .MatchAllWordForms = False
-                          .MatchSoundsLike = False
-                          .MatchWildcards = True
-                          .MatchFuzzy = False
-                      End With
-
-                   Selection.Find.Execute
-
-                   If Selection.Find.Found = False Then
-
-                        Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                        GoTo NextMac
-
-                    Else
-
-                        iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "Lrom " & "\*roman"
-
-                        Selection.TypeText Text:=" ("
-
-                        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                            PreserveFormatting:=False
-
-                        Selection.TypeText Text:=iSeqNum
-
-                        Selection.Fields.Update
-
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                        Selection.TypeText Text:=") "
-
-                        iLowRomLB = iLowRomLB + 1
-
-                    End If
-            Loop
-
-NextMac:
-
-SubSeqUROMP1NT
-
-Exit Sub
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqUROMP1NT()
-
-On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-    Dim iSeqNum
-
-    Dim URomSearchArray() As Variant
-    URomSearchArray = Array(" \(I\) ", " \(II\) ", " \(III\) ", " \(IV\) ", " \(V\) ", " \(VI\) ", " \(VII\) ", " \(VIII\) ", " \(IX\) ", " \(X\) ", _
-            " \(XI\) ", " \(XII\) ", " \(XIII\) ", " \(XIV\) ", " \(XV\) ", " \(XVI\) ", " \(XVII\) ", " \(XVIII\) ", " \(XIX\) ", " \(XX\) ", _
-            " \(XXI\) ", " \XXII\) ", " \(XXIII\) ", " \(XXIV\) ", " \(XXV\) ", " \(XXVI\) ")
-
-    Selection.Paragraphs(1).Range.Characters(1).Select
-    Selection.Collapse wdCollapseStart
-    Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-    Selection.Find.ClearFormatting
-    Selection.Find.Replacement.ClearFormatting
-
-    With Selection.Find
-        .Text = URomSearchArray(1)
-        .Forward = True
-        .Wrap = wdFindStop
-        .Format = True
-        .MatchCase = True
-        .MatchWholeWord = True
-        .MatchByte = False
-        .MatchAllWordForms = False
-        .MatchSoundsLike = False
-        .MatchWildcards = True
-        .MatchFuzzy = False
-    End With
-
-    Selection.Find.Execute
-
-            Dim iUROMLB
-            iUROMLB = 0
-
-            If Selection.Find.Found = True Then
-
-                Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                Selection.Paragraphs(1).Range.Characters(1).Select
-                Selection.Collapse wdCollapseStart
-                Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-                Selection.Find.ClearFormatting
-                Selection.Find.Replacement.ClearFormatting
-
-                      With Selection.Find
-                          .Text = URomSearchArray(iUROMLB)
-                          .Forward = False
-                          .Wrap = wdFindStop
-                          .Format = False
-                          .MatchCase = True
-                          .MatchWholeWord = True
-                          .MatchByte = False
-                          .MatchAllWordForms = False
-                          .MatchSoundsLike = False
-                          .MatchWildcards = True
-                          .MatchFuzzy = False
-                      End With
-
-                    Selection.Find.Execute
-
-                        iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UROM " & "\*ROMAN"
-
-                        Selection.TypeText Text:=" ("
-
-                        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                            PreserveFormatting:=False
-
-                        Selection.TypeText Text:=iSeqNum
-
-                        Selection.Fields.Update
-
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-                        Selection.TypeText Text:=") "
-
-SubSeqUROMP2NT
-
-            Else
-
-                SubSeqLowNT
-
-            End If
-     Exit Sub
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqUROMP2NT()
-
-On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-
- Dim iSeqNum
-
-    Dim URomSearchArray() As Variant
-    URomSearchArray = Array(" \(I\) ", " \(II\) ", " \(III\) ", " \(IV\) ", " \(V\) ", " \(VI\) ", " \(VII\) ", " \(VIII\) ", " \(IX\) ", " \(X\) ", _
-            " \(XI\) ", " \(XII\) ", " \(XIII\) ", " \(XIV\) ", " \(XV\) ", " \(XVI\) ", " \(XVII\) ", " \(XVIII\) ", " \(XIX\) ", " \(XX\) ", _
-            " \(XXI\) ", " \XXII\) ", " \(XXIII\) ", " \(XXIV\) ", " \(XXV\) ", " \(XXVI\) ")
-
-    Dim iUROMLB
-    iUROMLB = 1
-
-            Do
-
-                Selection.Paragraphs(1).Range.Characters(1).Select
-                Selection.Collapse wdCollapseStart
-                Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-                Selection.Find.ClearFormatting
-                Selection.Find.Replacement.ClearFormatting
-
-                    With Selection.Find
-                          .Text = URomSearchArray(iUROMLB)
-                          .Forward = True
-                          .Wrap = wdFindStop
-                          .Format = False
-                          .MatchCase = True
-                          .MatchWholeWord = True
-                          .MatchByte = False
-                          .MatchAllWordForms = False
-                          .MatchSoundsLike = False
-                          .MatchWildcards = True
-                          .MatchFuzzy = False
-                      End With
-
-                   Selection.Find.Execute
-
-                   If Selection.Find.Found = False Then
-
-                        Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                        GoTo NextMac
-
-                    Else
-
-                        iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UROM " & "\*ROMAN"
-
-                        Selection.TypeText Text:=" ("
-
-                        Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                            PreserveFormatting:=False
-
-                        Selection.TypeText Text:=iSeqNum
-
-                        Selection.Fields.Update
-
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                        Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                        Selection.TypeText Text:=") "
-
-                        iUROMLB = iUROMLB + 1
-
-                    End If
-            Loop
-NextMac:
-
-SubSeqLowNT
-                  Exit Sub
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqLowNT()
-
-On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-
- Dim iSeqNum
+FillLowRomSearchArrayNT
+
+Selection.Find.ClearFormatting
+Selection.Find.Replacement.ClearFormatting
+
+WhichCase:
+
+Select Case n
+
+    Case 1
+    
+        SeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "Lrom " & "\*roman"
+        FindThis = LowRomSearchArray(nIterArray)
+        
+    Case 2
+    
+        SeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UROM " & "\*ROMAN"
+        FindThis = URomSearchArray(nIterArray)
+        
+    Case 3
+        
+        SeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "low " & "\*alphabetic"
+        FindThis = " \([a-z]\) "
+        
+    Case 4
+    
+        SeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UP " & "\*ALPHABETIC"
+        FindThis = " \([A-Z]\) "
+        
+    Case 5
+        
+        SeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UP " & "\*ALPHABETIC"
+        FindThis = " \([0-9]\) "
+        
+    Case Else
+    
+        GoTo GetOut
+        
+End Select
+
+nIterArray = 0
+
+Selection.Paragraphs(1).Range.Characters(1).Select
+Selection.Collapse wdCollapseStart
+Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
+
+With Selection.Find
+    .Text = FindThis
+    .Forward = True
+    .Wrap = wdFindStop
+    .MatchCase = True
+    .MatchWholeWord = True
+    .MatchWildcards = True
+End With
 
     Do
+    
+        Selection.Find.Execute
+        
+        If Selection.Find.Found = False Then
+        
+            Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
+            
+            GoTo WhichCase
+            
+        Else
+            
+            Selection.TypeText Text:=" ("
+            
+            Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
+            PreserveFormatting:=False
+            
+            Selection.TypeText Text:=SeqNum
+            
+            Selection.Fields.Update
+            
+            Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+            Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+            
+            Selection.TypeText Text:=") "
+            
+            nIterArray = nIterArray + 1
+        
+        End If
+        
+    Loop
+
+GetOut:
 
-        Selection.Paragraphs(1).Range.Characters(1).Select
-        Selection.Collapse wdCollapseStart
-        Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-        Selection.Find.ClearFormatting
-        Selection.Find.Replacement.ClearFormatting
-
-        With Selection.Find
-            .Text = " \([a-z]\) "
-            .Forward = True
-            .Wrap = wdFindStop
-            .Format = True
-            .MatchCase = True
-            .MatchWholeWord = True
-            .MatchByte = False
-            .MatchAllWordForms = False
-            .MatchSoundsLike = False
-            .MatchWildcards = True
-            .MatchFuzzy = False
-        End With
-
-         Selection.Find.Execute
-
-            If Selection.Find.Found = False Then
-
-                Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                GoTo NextMac
-
-            Else
-
-                    iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "low " & "\*alphabetic"
-
-                    Selection.TypeText Text:=" ("
-
-                    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                        PreserveFormatting:=False
-
-                    Selection.TypeText Text:=iSeqNum
-
-                    Selection.Fields.Update
-
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                    Selection.TypeText Text:=") "
-
-            End If
-
-        Loop
-
-NextMac:
-
-SubSeqUPNT
-
- Exit Sub
- 
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqUPNT()
-
-'On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-
-        Do
-
-            Selection.Paragraphs(1).Range.Characters(1).Select
-            Selection.Collapse wdCollapseStart
-            Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-            Selection.Find.ClearFormatting
-            Selection.Find.Replacement.ClearFormatting
-
-            With Selection.Find
-                .Text = " \([A-Z]\) "
-                .Forward = True
-                .Wrap = wdFindStop
-                .Format = True
-                .MatchCase = True
-                .MatchWholeWord = True
-                .MatchByte = False
-                .MatchAllWordForms = False
-                .MatchSoundsLike = False
-                .MatchWildcards = True
-                .MatchFuzzy = False
-            End With
-
-            Selection.Find.Execute
-
-
-
-            If Selection.Find.Found = False Then
-
-                Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                GoTo NextMac
-
-            Else
-
-                    iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UP " & "\*ALPHABETIC"
-
-                    Selection.TypeText Text:=" ("
-
-                    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                        PreserveFormatting:=False
-
-                    Selection.TypeText Text:=iSeqNum
-
-                    Selection.Fields.Update
-
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                    Selection.TypeText Text:=") "
-
-            End If
-
-        Loop
-
-NextMac:
-
-SubSeqNumNT
-
- Exit Sub
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqNumNT()
-On Error GoTo ErrMsg
-
-Application.ScreenUpdating = False
-
-
-        Do
-
-            Selection.Paragraphs(1).Range.Characters(1).Select
-            Selection.Collapse wdCollapseStart
-            Selection.MoveDown Unit:=wdParagraph, Count:=1, Extend:=wdExtend
-
-            Selection.Find.ClearFormatting
-            Selection.Find.Replacement.ClearFormatting
-
-            With Selection.Find
-                .Text = " \([0-9]\) "
-                .Forward = True
-                .Wrap = wdFindStop
-                .Format = True
-                .MatchCase = True
-                .MatchWholeWord = True
-                .MatchByte = False
-                .MatchAllWordForms = False
-                .MatchSoundsLike = False
-                .MatchWildcards = True
-                .MatchFuzzy = False
-            End With
-
-            Selection.Find.Execute
-
-
-
-            If Selection.Find.Found = False Then
-
-                Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                GoTo NextMac
-
-            Else
-
-                    iSeqNum = "seq " & "here" & ActiveDocument.Range(0, Selection.Range.End).Paragraphs.Count & "UP " & "\*ALPHABETIC"
-
-                    Selection.TypeText Text:=" ("
-
-                    Selection.Fields.Add Range:=Selection.Range, Type:=wdFieldEmpty, _
-                        PreserveFormatting:=False
-
-                    Selection.TypeText Text:=iSeqNum
-
-                    Selection.Fields.Update
-
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
-
-                    Selection.TypeText Text:=") "
-
-            End If
-
-        Loop
-
-NextMac:
-
-SubSeqWrapNT
-
- Exit Sub
-ErrMsg:
-
-UhOhNT
-
-End Sub
-Private Sub SubSeqWrapNT()
 
 Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
 
@@ -593,5 +125,10 @@ If ActiveWindow.View.ShowFieldCodes = True Then
 Application.ScreenUpdating = True
 
 CompletedNT
+
+Exit Sub
+ErrMsg:
+
+UhOhNT
 
 End Sub
